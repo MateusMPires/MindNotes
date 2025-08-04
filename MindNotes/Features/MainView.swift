@@ -7,14 +7,17 @@
 
 import SwiftUI
 
+//TODO: Mostrar frases com aspas
+
 struct MainView: View {
+    
+    @StateObject var viewModel = MainViewModel()
     
     @State var showSheet: Bool = false
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                
+            VStack {
                 VStack(alignment: .leading, spacing: 16) {
                     
                     // Header com filtro
@@ -43,91 +46,67 @@ struct MainView: View {
                     .padding(.horizontal)
                     
                     // Lista de pensamentos
-                    LazyVStack(spacing: 12) {
+                    List {
                         // Pensamento clicável
                         // Adicione mais pensamentos aqui..
                         //TODO: Colocar entre parênteses as frases.
-                        NavigationLink(destination: DetailedThoughtView(
-                            thought: "Lembrar de estudar SwiftUI hoje",
-                            dateTime: "11/06/1012 às 09:30",
-                            tag: "Lembrete",
-                            additionalNotes: "Focar nos conceitos de State, Binding e Navigation. Praticar com projetos pequenos."
-                        )) {
-                            ThoughtView(
-                                thought: "Lembrar de estudar SwiftUI hoje",
-                                dateTime: "11/06/1012 às 09:30",
-                                tag: "Lembrete"
-                            )
-                            .padding(.horizontal)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .swipeActions(edge: .trailing) {
-                            Button("Excluir") {
-                                // Ação de excluir
-                            }
-                            .tint(.red)
+                        ForEach(viewModel.thoughts, id: \.id) { thought in
+                         
+                                ThoughtView(
+                                    thought: thought.thought,
+                                    dateTime: "11/06/1012 às 09:30",
+                                    tag: "Lembrete"
+                                )
+                                //.padding(.horizontal)
+                                .overlay(
+                                    NavigationLink(
+                                        destination: DetailedThoughtView(
+                                            thought: thought.thought,
+                                            dateTime: "11/06/1012 às 09:30",
+                                            tag: "Lembrete",
+                                            additionalNotes: "Focar nos conceitos de State, Binding e Navigation."
+                                        )
+                                    ) {
+                                        EmptyView()
+                                    }
+                                    .opacity(0)
+                                )
+                                //.contentShape(Rectangle())
+
                             
-                            Button("Favoritar") {
-                                // Ação de favoritar
+                            .buttonStyle(PlainButtonStyle())
+                            .swipeActions(edge: .trailing) {
+                                Button("Excluir") {
+                                    // Ação de excluir
+                                }
+                                .tint(.red)
+                                
+                                Button("Favoritar") {
+                                    // Ação de favoritar
+                                }
+                                .tint(.yellow)
                             }
-                            .tint(.yellow)
-                        }
-                        .swipeActions(edge: .leading) {
-                            Button("Compartilhar") {
-                                // Ação de compartilhar
+                            .swipeActions(edge: .leading) {
+                                Button("Compartilhar") {
+                                    // Ação de compartilhar
+                                }
+                                .tint(.green)
+                                
+                                Button("Editar") {
+                                    // Ação de editar
+                                }
+                                .tint(.blue)
                             }
-                            .tint(.green)
                             
-                            Button("Editar") {
-                                // Ação de editar
-                            }
-                            .tint(.blue)
-                        }
-                        
-                        // Adicione mais pensamentos aqui...
-                        NavigationLink(destination: DetailedThoughtView(
-                            thought: "Lembrar de estudar SwiftUI hoje",
-                            dateTime: "11/06/1012 às 09:30",
-                            tag: "Lembrete",
-                            additionalNotes: "Focar nos conceitos de State, Binding e Navigation. Praticar com projetos pequenos."
-                        )) {
-                            ThoughtView(
-                                thought: "Lembrar de estudar SwiftUI hoje",
-                                dateTime: "11/06/1012 às 09:30",
-                                tag: "Lembrete"
-                            )
-                            .padding(.horizontal)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .swipeActions(edge: .trailing) {
-                            Button("Excluir") {
-                                // Ação de excluir
-                            }
-                            .tint(.red)
-                            
-                            Button("Favoritar") {
-                                // Ação de favoritar
-                            }
-                            .tint(.yellow)
-                        }
-                        .swipeActions(edge: .leading) {
-                            Button("Compartilhar") {
-                                // Ação de compartilhar
-                            }
-                            .tint(.green)
-                            
-                            Button("Editar") {
-                                // Ação de editar
-                            }
-                            .tint(.blue)
                         }
                     }
+                    .listStyle(.plain)
                 }
                 .padding(.vertical)
             }
-            .sheet(isPresented: $showSheet, content: {
-                NewThought(isShowing: $showSheet)
-            })
+            .sheet(isPresented: $showSheet) {
+               NewThought(viewModel: viewModel)
+            }
             .toolbar {
                 // Aqui eu quero um header pra eu poder filtrar e classificar todos os pensamentos.
                 
@@ -151,7 +130,7 @@ struct MainView: View {
 }
 
 #Preview {
-    HomeView()
+    MainView()
 }
 
 /*
@@ -169,13 +148,6 @@ struct ThoughtView: View {
             // Header com tag e botão de favoritar
             
             HStack {
-                //                Circle()
-                //                    .stroke(style: StrokeStyle(lineWidth: 2))
-                //                    .foregroundStyle(.gray.opacity(0.3))
-                //                    .frame(width: 32, height: 32)
-                //                    .overlay {
-                //                        Text("12")
-                //                    }
                 // Conteúdo do pensamento
                 Text(thought)
                     .font(.body)
@@ -193,13 +165,7 @@ struct ThoughtView: View {
                         .font(.title3)
                 }
             }
-            // Data e hora
-            //            Text(dateTime)
-            //                .font(.caption)
-            //                .foregroundColor(.secondary)
-            //                .italic()
-            //                .hidden()
-            
+
             HStack {
                 Text(tag)
                     .font(.caption)
@@ -218,6 +184,6 @@ struct ThoughtView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color(.systemGray4), lineWidth: 1)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        //.clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

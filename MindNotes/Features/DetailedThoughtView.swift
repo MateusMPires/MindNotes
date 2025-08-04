@@ -14,6 +14,8 @@ struct DetailedThoughtView: View {
     let additionalNotes: String
     @State private var isFavorited: Bool = false
     
+    @State var showEditSheet: Bool = false
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -106,19 +108,23 @@ struct DetailedThoughtView: View {
                         Label("Editar", systemImage: "pencil")
                     }
                     
-                    Button(action: {
+                    Button(role: .destructive) {
                         // Excluir
-                    }) {
+                    } label: {
                         Label("Excluir", systemImage: "trash")
                     }
+                    
                 } label: {
                     Image(systemName: "ellipsis.circle")
                         .foregroundColor(.blue)
                 }
             }
         }
+//        .sheet(isPresented: $showEditSheet) {
+//
+//        }
     }
 }
 #Preview {
-    NewThought(isShowing: .constant(true))
+    DetailedThoughtView(thought: "a", dateTime: "k", tag: "", additionalNotes: "")
 }

@@ -9,9 +9,13 @@ import SwiftUI
 
 struct NewThought: View {
     
-    @Binding var isShowing: Bool
+    @ObservedObject var viewModel: MainViewModel
     
-    @State var showSheet: Bool = false
+    @Environment(\.dismiss) var dismiss
+    @State var showTagSheet: Bool = false
+    @FocusState private var isMainThoughtFocused: Bool
+
+    @State var isEditing: Bool = false
     
     @State private var mainThought: String = ""
     @State private var additionalNotes: String = ""
@@ -21,32 +25,28 @@ struct NewThought: View {
     @State private var reminderDate = Date()
     @State private var isFavorited: Bool = false
     @State private var thoughtDate = Date()
-    @State private var showingDatePicker = false
-    
-    private let predefinedTags = ["Reflexão", "Versículo", "Lembrete", "Inspiração", "Gratidão", "Oração"]
-    
+
     var body: some View {
         NavigationStack {
             Form {
-                // Seção principal do pensamento
+                // Pensamento e Notas
                 Section {
-                    TextField("Escreva seu pensamento..", text: $mainThought, axis: .vertical)
+                    TextField("Pensamento...", text: $mainThought, axis: .vertical)
                         .lineLimit(3...6)
                         .font(.body)
+                        .focused($isMainThoughtFocused)
                     
-                    TextField("Detalhes e notas...", text: $additionalNotes, axis: .vertical)
+                    TextField("Notas e detalhes...", text: $additionalNotes, axis: .vertical)
                         .lineLimit(2...8)
                         .font(.callout)
                         .foregroundColor(.secondary)
                 }
                 
-                // Navegação pra tela de Etiquetas
+                // Etiquetas
                 Section {
                     Button {
-                        // Go to TagView...
-                        showSheet.toggle()
+                        showTagSheet.toggle()
                     } label: {
-                        
                         HStack {
                             Image(systemName: "number")
                                 .foregroundColor(.white)
@@ -56,58 +56,62 @@ struct NewThought: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 4))
                             
                             Text("Etiquetas")
-                            
                             Spacer()
-                            
+                            if !selectedTag.isEmpty {
+                                Text("#\(selectedTag)")
+                                    .foregroundStyle(.secondary)
+                            }
                             Image(systemName: "chevron.right")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                               
                         }
                     }
-                    .padding(8)
+                    .padding(.vertical, 6)
                     .foregroundStyle(.primary)
                 }
                 
-                // Seção de data e hora
+                // Data
                 Section {
                     DatePicker("", selection: $thoughtDate, displayedComponents: [.date, .hourAndMinute])
                         .datePickerStyle(.graphical)
                         .labelsHidden()
                 }
-                // Seção de lembrete
+                
+                // Lembrete
                 Section {
-                    HStack {
-                        Image(systemName: "bell.fill")
-                            .foregroundColor(.white)
-                            .font(.subheadline)
-                            .frame(width: 28, height: 28)
-                            .background(Color.orange)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                        
-                        Text("Lembre-me")
-                        
-                        Toggle("", isOn: $shouldRemind)
+                    Toggle(isOn: $shouldRemind) {
+                        Label("Lembre-me", systemImage: "bell.fill")
+                            .foregroundStyle(.orange)
+                    }
+                    
+                    if shouldRemind {
+                        DatePicker("Data do lembrete", selection: $reminderDate, displayedComponents: [.date, .hourAndMinute])
+                    }
+                }
+
+                // Favorito
+                Section {
+                    Toggle(isOn: $isFavorited) {
+                        Label("Favorito", systemImage: "star.fill")
+                            .foregroundStyle(.yellow)
                     }
                 }
             }
-            .navigationTitle("Novo Pensamento")
+            .navigationTitle(isEditing ? "Editar Pensamento" : "Novo Pensamento")
             .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showSheet, content: {
-                TagView(showSheet: $showSheet)
-            })
+            .sheet(isPresented: $showTagSheet) {
+                TagView(showSheet: $showTagSheet)
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancelar") {
-                        // Ação de cancelar
-                        isShowing.toggle()
+                        dismiss()
                     }
                     .foregroundColor(.blue)
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Salvar") {
-                        // Ação de salvar
                         saveThought()
                     }
                     .foregroundColor(.blue)
@@ -115,22 +119,30 @@ struct NewThought: View {
                     .disabled(mainThought.isEmpty)
                 }
             }
+            .onAppear {
+                isMainThoughtFocused = true
+            }
         }
     }
     
     private func saveThought() {
-        // Lógica para salvar o pensamento
-        let finalTag = selectedTag == "custom" ? customTag : selectedTag
+            // Cria novo
+            let new = Thought(
+                thought: mainThought,
+                date: thoughtDate,
+                isFavorite: isFavorited,
+                shouldRemind: shouldRemind
+            )
+            viewModel.addThought(new)
         
-        print("Pensamento: \(mainThought)")
-        print("Notas adicionais: \(additionalNotes)")
-        print("Tag: \(finalTag)")
-        print("Data: \(thoughtDate)")
-        print("Lembrete: \(shouldRemind ? reminderDate.description : "Não")")
-        print("Favorito: \(isFavorited)")
+        
+        dismiss()
     }
 }
 
+
+//TODO: Tem que ter um lugar pra gerenciar as tags
+//TODO:
 struct TagView: View {
     
     @Binding var showSheet: Bool
@@ -165,7 +177,7 @@ struct TagView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                        // Confirmation Action...
-                        showSheet.toggle()
+                        
                     } label: {
                         Text("OK")
                     }
@@ -185,7 +197,8 @@ struct TagView: View {
     }
 }
 #Preview {
-    NewThought(isShowing: .constant(true))
+    let viewModel = MainViewModel()
+    NewThought(viewModel: viewModel)
     
     //TagView(showSheet: .constant(true))
 }
