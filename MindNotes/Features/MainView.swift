@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct MainView: View {
     
     @State var showSheet: Bool = false
     
