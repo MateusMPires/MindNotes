@@ -1,0 +1,74 @@
+---
+alwaysApply: false
+---
+# 🧠 Product Requirements Document (PRD) – Identity Journal iOS App
+
+## 📌 App Summary
+
+This is a minimalistic and emotionally meaningful iOS app built with SwiftUI. It provides a **personal and deep space** for users to document **thoughts, reflections, conclusions, ideas, milestones**, and **insights** that define **who they are and who they are becoming**.
+
+It’s not a productivity app — it’s a **memory of your inner journey**, helping users not to forget what truly matters.
+
+---
+
+## 🎯 Core Features
+
+### 1. Quick Thought Registration
+- User can write a thought quickly.
+- Must assign the thought to a **Journey** (folder/category).
+- Can add multiple **Tags** (labels).
+- Can optionally edit the **Date** of the entry.
+
+### 2. Journey Management
+- User can:
+  - Create new journeys.
+  - Archive old journeys (not shown by default but not deleted).
+  - Delete journeys permanently.
+
+### 3. Thought Management
+- User can:
+  - Edit existing thoughts.
+  - Delete thoughts.
+  - Favorite/Like a thought (for personal use).
+  - Share a thought (text-based or image-based in the future).
+
+### 4. "Future Me" Notifications
+- User can mark specific thoughts to be **remembered in the future**.
+- Notification delivery options:
+  - At a specific date and time.
+  - At random times.
+  - With repeating intervals (daily, weekly, etc.).
+- Push notifications will display the selected thought content.
+
+### 5. UI & UX Principles
+- Must follow **serene, minimalistic, elegant design**.
+- Animations should be subtle and meaningful.
+- Focus on user emotion, clarity, and beauty.
+- Avoid clutter — reduce to the essential.
+
+### 6. Home & Filtering
+- Home view displays:
+  - Recent thoughts (sorted by date).
+  - Filter by **Journey**.
+  - Filter by **Tag**.
+- Search functionality to find specific thoughts.
+
+### 7. iOS Widgets
+- Widgets should display:
+  - A random thought.
+  - Thoughts from a specific journey or tag.
+- Widgets refresh content regularly.
+
+### 8. Architecture
+- Must follow **MVVM** pattern (Model – View – ViewModel).
+- Organized into clean modules:
+  - Thought
+  - Journey
+  - Notification
+  - Settings
+  - Shared UI Components
+
+---
+
+## 📁 Suggested File Structure
+
