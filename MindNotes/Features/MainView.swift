@@ -14,117 +14,255 @@ struct MainView: View {
     @StateObject var viewModel = MainViewModel()
     
     @State var showSheet: Bool = false
+    @State private var isFirstSectionExpanded = true
     
     var body: some View {
         NavigationStack {
-            VStack {
-                VStack(alignment: .leading, spacing: 16) {
+            ScrollView {
+                VStack(spacing: 40) {
+                    // Title with date...
+                    VStack {
+                        Text("MONDAY, APRIL 7, 2025")
+                            .font(.caption2)
+                        
+                        Text("Olá Mateus!")
+                            .font(.largeTitle)
+                    }
                     
-                    // Header com filtro
-                    HStack {
-                        Button(action: {
-                            // Ação do filtro
-                        }) {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
+                    // Filter rectangles...
+                    //                HStack {
+                    //                    Text("Futuro eu")
+                    //                        .padding()
+                    //                        .frame(maxWidth: .infinity)
+                    //                        .background {
+                    //                            RoundedRectangle(cornerRadius: 8)
+                    //                                .fill(Color.gray.opacity(0.2))
+                    //                                //.frame(maxWidth: .infinity)
+                    //                        }
+                    //
+                    //                    Spacer()
+                    //
+                    //                    Text("Todos")
+                    //                        .padding()
+                    //                        .frame(maxWidth: .infinity)
+                    //                        .background {
+                    //                            RoundedRectangle(cornerRadius: 8)
+                    //                                .fill(Color.gray.opacity(0.2))
+                    //                        }
+                    //                }
+                    //                .padding()
+                    
+                    // Teste...
+//                    VStack(spacing: 16) {
+//                        
+//                        Image(systemName: "bell.fill")
+//                            .font(.callout)
+//                        
+//                        Text("se lembre")
+//                            .textCase(.uppercase)
+//                            .font(.caption2)
+//                        
+//                        Text("dskjfhaskjdhfjakfhaskjdhfakjsdhfakjddsmfsdmhfshjdgfsjhadgfsodijshfkajs")
+//                            .multilineTextAlignment(.center)
+//                        
+//                        Text("Criado dia 09/02/2023")
+//                            .font(.caption2)
+//                    }
+//                    .padding()
+//                    .background {
+//                        RoundedRectangle(cornerRadius: 12)
+//                            .fill(Color.gray.opacity(0.2))
+//                            .frame(maxWidth: .infinity)
+//                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        
+                        HStack {
+                            Text("Jornadas")
                                 .font(.title2)
-                                .foregroundColor(.blue)
+                                .bold()
+                            
+                            
+                            Spacer()
+                            
+                            //                        Button {
+                            //
+                            //                        } label: {
+                            //                            Image(systemName: "plus")
+                            //                        }
+                        }
+                        .padding(.horizontal)
+                        
+                        List {
+                            
+                            
+                            NavigationLink("djk") {
+                                
+                            }
+                            NavigationLink("djk") {
+                                
+                            }
+                        }
+                        .listStyle(.insetGrouped)
+                        .scrollContentBackground(.hidden)
+                        
+                        
+                    }
+                    // Tag Rectangle...
+                    VStack {
+                        HStack {
+                            Text("Etiquetas")
+                                .font(.title2)
+                                .bold()
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.secondary)
                         }
                         
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    
-                    // Indicador do mês
-                    HStack {
-                        Text("Junho")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    
-                    // Lista de pensamentos
-                    List {
-                        // Pensamento clicável
-                        // Adicione mais pensamentos aqui..
-                        //TODO: Colocar entre parênteses as frases.
-                        ForEach(viewModel.thoughts, id: \.id) { thought in
-                         
-                                ThoughtView(
-                                    thought: thought.thought,
-                                    dateTime: "11/06/1012 às 09:30",
-                                    tag: "Lembrete"
-                                )
-                                //.padding(.horizontal)
-                                .overlay(
-                                    NavigationLink(
-                                        destination: DetailedThoughtView(
-                                            thought: thought.thought,
-                                            dateTime: "11/06/1012 às 09:30",
-                                            tag: "Lembrete",
-                                            additionalNotes: "Focar nos conceitos de State, Binding e Navigation."
-                                        )
-                                    ) {
-                                        EmptyView()
+                        HStack {
+                            
+                            Text("#Todas as etiquetas")
+                                .font(.caption)
+                                .padding()
+                                .background {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.gray.opacity(0.2))
+                                }
+                            
+                            ForEach(0..<2, id: \.self) { tag in
+                                Text("#ABC")
+                                    .font(.caption)
+                                    .padding()
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.gray.opacity(0.2))
                                     }
-                                    .opacity(0)
-                                )
-                                //.contentShape(Rectangle())
-
-                            
-                            .buttonStyle(PlainButtonStyle())
-                            .swipeActions(edge: .trailing) {
-                                Button("Excluir") {
-                                    // Ação de excluir
-                                }
-                                .tint(.red)
                                 
-                                Button("Favoritar") {
-                                    // Ação de favoritar
-                                }
-                                .tint(.yellow)
-                            }
-                            .swipeActions(edge: .leading) {
-                                Button("Compartilhar") {
-                                    // Ação de compartilhar
-                                }
-                                .tint(.green)
-                                
-                                Button("Editar") {
-                                    // Ação de editar
-                                }
-                                .tint(.blue)
                             }
                             
+                            Spacer()
                         }
-                    }
-                    .listStyle(.plain)
-                }
-                .padding(.vertical)
-            }
-            .sheet(isPresented: $showSheet) {
-               NewThought(viewModel: viewModel)
-            }
-            .toolbar {
-                // Aqui eu quero um header pra eu poder filtrar e classificar todos os pensamentos.
-                
-                ToolbarItem(placement: .bottomBar) {
-                    HStack {
-                        Button {
-                            showSheet.toggle()
-                        } label: {
-                            Image(systemName: "plus.circle")
-                            Text("Novo pensamento")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.2))
                         }
-                        .bold()
                         
-                        Spacer()
                     }
+                    .padding()
+                    
+                    Spacer()
+                    
+                    
+                    //                    // Indicador do mês
+                    //                    HStack {
+                    //                        Text("Junho")
+                    //                            .font(.title2)
+                    //                            .fontWeight(.semibold)
+                    //                            .foregroundColor(.primary)
+                    //
+                    //                        Spacer()
+                    //                    }
+                    //                    .padding(.horizontal)
+                    
+                    //                    // Lista de pensamentos
+                    //                    List {
+                    //                        // Pensamento clicável
+                    //                        // Adicione mais pensamentos aqui..
+                    //                        //TODO: Colocar entre parênteses as frases.
+                    //                        ForEach(viewModel.thoughts, id: \.id) { thought in
+                    //
+                    //                                ThoughtView(
+                    //                                    thought: thought.thought,
+                    //                                    dateTime: "11/06/1012 às 09:30",
+                    //                                    tag: "Lembrete"
+                    //                                )
+                    //                                //.padding(.horizontal)
+                    //                                .overlay(
+                    //                                    NavigationLink(
+                    //                                        destination: DetailedThoughtView(
+                    //                                            thought: thought.thought,
+                    //                                            dateTime: "11/06/1012 às 09:30",
+                    //                                            tag: "Lembrete",
+                    //                                            additionalNotes: "Focar nos conceitos de State, Binding e Navigation."
+                    //                                        )
+                    //                                    ) {
+                    //                                        EmptyView()
+                    //                                    }
+                    //                                    .opacity(0)
+                    //                                )
+                    //                                //.contentShape(Rectangle())
+                    //
+                    //
+                    //                            .buttonStyle(PlainButtonStyle())
+                    //                            .swipeActions(edge: .trailing) {
+                    //                                Button("Excluir") {
+                    //                                    // Ação de excluir
+                    //                                }
+                    //                                .tint(.red)
+                    //
+                    //                                Button("Favoritar") {
+                    //                                    // Ação de favoritar
+                    //                                }
+                    //                                .tint(.yellow)
+                    //                            }
+                    //                            .swipeActions(edge: .leading) {
+                    //                                Button("Compartilhar") {
+                    //                                    // Ação de compartilhar
+                    //                                }
+                    //                                .tint(.green)
+                    //
+                    //                                Button("Editar") {
+                    //                                    // Ação de editar
+                    //                                }
+                    //                                .tint(.blue)
+                    //                            }
+                    //
+                    //                        }
+                    //                    }
+                    //                    .listStyle(.plain)
+                    
+                }
+                .sheet(isPresented: $showSheet) {
+                    NewThought(viewModel: viewModel)
+                }
+                .toolbar {
+                    // Aqui eu quero um header pra eu poder filtrar e classificar todos os pensamentos.
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            
+                        } label: {
+                            Circle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 32, height: 32)
+                        }
+                    }
+                    ToolbarItem(placement: .bottomBar) {
+                        HStack {
+                            Button {
+                                showSheet.toggle()
+                            } label: {
+                                Image(systemName: "plus.circle")
+                                Text("Novo pensamento")
+                            }
+                            .bold()
+                            
+                            Spacer()
+                            
+                            Button {
+                                
+                            } label: {
+                                Text("Adicionar jornada")
+                            }
+                            
+                        }
+                    }
+                    
                 }
             }
-            .navigationTitle("Meus pensamentos")
         }
     }
 }
