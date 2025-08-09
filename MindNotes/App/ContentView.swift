@@ -11,9 +11,12 @@ struct ContentView: View {
     @EnvironmentObject private var dataManager: DataManager
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
     @State private var showingWelcome = false
+    @StateObject private var thoughtViewModel = ThoughtViewModel()
     
+
     var body: some View {
-        JourneyListView()
+        TodayView()
+            .environmentObject(thoughtViewModel)
             .environmentObject(dataManager)
             .sheet(isPresented: $showingWelcome) {
                 WelcomeView()

@@ -33,7 +33,7 @@ struct ThoughtListView: View {
                 }
             }
             .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.automatic)
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Buscar pensamentos...")
             .onChange(of: searchText) { _, newValue in
                 thoughtViewModel.searchThoughts(query: newValue)
@@ -68,28 +68,28 @@ struct ThoughtListView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .bottomBar) {
-                    HStack {
-                        Button {
-                            showingNewThought = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Novo Pensamento")
-                            }
-                            .foregroundColor(.blue)
-                            .fontWeight(.medium)
-                        }
-                        
-                        Spacer()
-                        
-                        if !thoughtViewModel.selectedTags.isEmpty {
-                            Text("\(thoughtViewModel.selectedTags.count) filtros")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
+//                ToolbarItem(placement: .bottomBar) {
+//                    HStack {
+//                        Button {
+//                            showingNewThought = true
+//                        } label: {
+//                            HStack {
+//                                Image(systemName: "plus.circle.fill")
+//                                Text("Novo Pensamento")
+//                            }
+//                            .foregroundColor(.blue)
+//                            .fontWeight(.medium)
+//                        }
+//                        
+//                        Spacer()
+//                        
+//                        if !thoughtViewModel.selectedTags.isEmpty {
+//                            Text("\(thoughtViewModel.selectedTags.count) filtros")
+//                                .font(.caption)
+//                                .foregroundColor(.secondary)
+//                        }
+//                    }
+//                }
             }
             .sheet(isPresented: $showingNewThought) {
                 NewThoughtView(journey: journey)

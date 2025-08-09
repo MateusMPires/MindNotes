@@ -62,14 +62,25 @@ class DataManager: ObservableObject {
     }
     
     // MARK: - Thought Management
-    func createThought(content: String, notes: String? = nil, journey: Journey? = nil, tags: [String] = [], shouldRemind: Bool = false, reminderDate: Date? = nil) {
+    func createThought(
+        content: String,
+        notes: String? = nil,
+        journey: Journey? = nil,
+        tags: [String] = [],
+        shouldRemind: Bool = false,
+        reminderDate: Date? = nil,
+        createdDate: Date = Date(),
+        isFavorite: Bool = false
+    ) {
         let thought = Thought(
             content: content,
             notes: notes,
             journey: journey,
             tags: tags,
             shouldRemind: shouldRemind,
-            reminderDate: reminderDate
+            reminderDate: reminderDate,
+            createdDate: createdDate,
+            isFavorite: isFavorite
         )
         context.insert(thought)
         saveContext()

@@ -10,14 +10,13 @@ import SwiftData
 
 struct JourneyListView: View {
     @StateObject private var journeyViewModel = JourneyViewModel()
-    @StateObject private var thoughtViewModel = ThoughtViewModel()
+    @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
     @State private var showingCreateJourney = false
     @State private var selectedJourney: Journey?
     
     var body: some View {
         NavigationStack {
             List {
-                // All Thoughts Section
                 Section {
                     NavigationLink {
                         ThoughtListView(journey: nil)
@@ -25,14 +24,14 @@ struct JourneyListView: View {
                     } label: {
                         HStack {
                             Image(systemName: "tray.full.fill")
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                                 .font(.title3)
                                 .frame(width: 32, height: 32)
-                                .background(Color.gray)
+                                .background(Color.secondary.opacity(0.15))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                             
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Todos os Pensamentos")
+                                Text("minha mente")
                                     .font(.body)
                                     .fontWeight(.medium)
                                 
@@ -40,7 +39,6 @@ struct JourneyListView: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
-                            
                             Spacer()
                         }
                     }
@@ -51,28 +49,24 @@ struct JourneyListView: View {
                     } label: {
                         HStack {
                             Image(systemName: "star.fill")
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                                 .font(.title3)
                                 .frame(width: 32, height: 32)
-                                .background(Color.yellow)
+                                .background(Color.secondary.opacity(0.15))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
-                            
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Favoritos")
+                                Text("favoritos")
                                     .font(.body)
                                     .fontWeight(.medium)
-                                
                                 Text("\(thoughtViewModel.thoughts.filter(\.isFavorite).count) pensamentos")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
-                            
                             Spacer()
                         }
                     }
                 }
                 
-                // Journeys Section
                 Section("Jornadas") {
                     ForEach(journeyViewModel.journeys) { journey in
                         NavigationLink {
@@ -88,13 +82,11 @@ struct JourneyListView: View {
                             } label: {
                                 Label("Editar", systemImage: "pencil")
                             }
-                            
                             Button {
                                 journeyViewModel.archiveJourney(journey)
                             } label: {
                                 Label("Arquivar", systemImage: "archivebox")
                             }
-                            
                             Button(role: .destructive) {
                                 journeyViewModel.deleteJourney(journey)
                             } label: {
@@ -109,17 +101,15 @@ struct JourneyListView: View {
                     } label: {
                         HStack {
                             Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
                                 .font(.title2)
-                            
                             Text("Nova Jornada")
-                                .foregroundColor(.blue)
+                                .foregroundColor(.primary)
                                 .fontWeight(.medium)
                         }
                     }
                 }
                 
-                // Archived Journeys Section
                 if journeyViewModel.showingArchived {
                     Section("Arquivadas") {
                         ForEach(journeyViewModel.journeys.filter(\.isArchived)) { journey in
@@ -136,7 +126,6 @@ struct JourneyListView: View {
                                 } label: {
                                     Label("Desarquivar", systemImage: "tray.and.arrow.up")
                                 }
-                                
                                 Button(role: .destructive) {
                                     journeyViewModel.deleteJourney(journey)
                                 } label: {
@@ -147,7 +136,7 @@ struct JourneyListView: View {
                     }
                 }
             }
-            .navigationTitle("MindNotes")
+            .navigationTitle("jornadas")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
@@ -156,7 +145,6 @@ struct JourneyListView: View {
                         } label: {
                             Label("Nova Jornada", systemImage: "folder.badge.plus")
                         }
-                        
                         Button {
                             journeyViewModel.toggleArchivedView()
                         } label: {
@@ -167,6 +155,7 @@ struct JourneyListView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
+                            .foregroundColor(.primary)
                     }
                 }
             }
@@ -175,9 +164,7 @@ struct JourneyListView: View {
                     journeyViewModel: journeyViewModel,
                     journey: selectedJourney
                 )
-                .onDisappear {
-                    selectedJourney = nil
-                }
+                .onDisappear { selectedJourney = nil }
             }
             .onAppear {
                 journeyViewModel.loadJourneys()
@@ -201,21 +188,17 @@ struct JourneyRowView: View {
             Text(journey.emoji)
                 .font(.title2)
                 .frame(width: 32, height: 32)
-                .background(Color(hex: journey.colorHex).opacity(0.2))
+                .background(Color.secondary.opacity(0.15))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-            
             VStack(alignment: .leading, spacing: 2) {
                 Text(journey.name)
                     .font(.body)
                     .fontWeight(.medium)
-                
                 Text("\(journey.thoughtCount) pensamentos")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
             Spacer()
-            
             if journey.isArchived {
                 Image(systemName: "archivebox.fill")
                     .foregroundColor(.secondary)
@@ -227,4 +210,5 @@ struct JourneyRowView: View {
 
 #Preview {
     JourneyListView()
+        .environmentObject(ThoughtViewModel())
 }

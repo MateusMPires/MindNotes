@@ -43,17 +43,34 @@ class ThoughtViewModel: ObservableObject {
         loadThoughts()
     }
     
-    func createThought(content: String, notes: String? = nil, tags: [String] = [], shouldRemind: Bool = false, reminderDate: Date? = nil) {
+    func createThought(
+        content: String,
+        notes: String? = nil,
+        tags: [String] = [],
+        shouldRemind: Bool = false,
+        reminderDate: Date? = nil,
+        createdDate: Date = Date(),
+        isFavorite: Bool = false
+    ) {
         dataManager.createThought(
             content: content,
             notes: notes,
             journey: currentJourney,
             tags: tags,
             shouldRemind: shouldRemind,
-            reminderDate: reminderDate
+            reminderDate: reminderDate,
+            createdDate: createdDate,
+            isFavorite: isFavorite
         )
         loadThoughts()
         loadTags()
+    }
+
+    // MARK: - Today Helpers
+    var todayThoughts: [Thought] {
+        let cal = Calendar.current
+        return thoughts.filter { cal.isDateInToday($0.createdDate) }
+            .sorted { $0.createdDate > $1.createdDate }
     }
     
     func updateThought(_ thought: Thought) {

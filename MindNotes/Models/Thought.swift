@@ -23,13 +23,22 @@ class Thought {
     
     var journey: Journey?
     
-    init(content: String, notes: String? = nil, journey: Journey? = nil, tags: [String] = [], shouldRemind: Bool = false, reminderDate: Date? = nil) {
+    init(
+        content: String,
+        notes: String? = nil,
+        journey: Journey? = nil,
+        tags: [String] = [],
+        shouldRemind: Bool = false,
+        reminderDate: Date? = nil,
+        createdDate: Date = Date(),
+        isFavorite: Bool = false
+    ) {
         self.id = UUID()
         self.content = content
         self.notes = notes
-        self.createdDate = Date()
-        self.modifiedDate = Date()
-        self.isFavorite = false
+        self.createdDate = createdDate
+        self.modifiedDate = createdDate
+        self.isFavorite = isFavorite
         self.tags = tags
         self.shouldRemind = shouldRemind
         self.reminderDate = reminderDate

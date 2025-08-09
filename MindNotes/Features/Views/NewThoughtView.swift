@@ -249,7 +249,9 @@ struct NewThoughtView: View {
                 notes: trimmedNotes.isEmpty ? nil : trimmedNotes,
                 tags: tags,
                 shouldRemind: shouldRemind,
-                reminderDate: shouldRemind ? reminderDate : nil
+                reminderDate: shouldRemind ? reminderDate : nil,
+                createdDate: thoughtDate,
+                isFavorite: isFavorite
             )
         }
         
