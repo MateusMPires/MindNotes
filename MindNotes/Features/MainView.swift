@@ -227,7 +227,7 @@ struct MainView: View {
                     
                 }
                 .sheet(isPresented: $showSheet) {
-                    NewThought(viewModel: viewModel)
+                    // Deprecated - use new views instead
                 }
                 .toolbar {
                     // Aqui eu quero um header pra eu poder filtrar e classificar todos os pensamentos.

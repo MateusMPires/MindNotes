@@ -1,5 +1,5 @@
 //
-//  HomeViewModel.swift
+//  MainViewModel.swift
 //  MindNotes
 //
 //  Created by Mateus Martins Pires on 01/08/25.
@@ -7,25 +7,17 @@
 
 import Foundation
 
-/*
- AÇÕES:
- 
- - Filtrar de frases
- - Carregar e mostrar frases
- 
- */
+// DEPRECATED: This file is kept for compatibility
+// Use ThoughtViewModel and JourneyViewModel instead
 
 class MainViewModel: ObservableObject {
-    
-    @Published var thoughts: [Thought] = [
-        Thought(thought: "Se ame mais", date: Date(), isFavorite: false, shouldRemind: false)
-    ]
+    @Published var thoughts: [Thought] = []
     
     func addThought(_ thought: Thought) {
-        self.thoughts.append(thought)
+        // Deprecated - use ThoughtViewModel instead
     }
     
     func updateThought(_ thought: Thought) {
-        
+        // Deprecated - use ThoughtViewModel instead
     }
 }

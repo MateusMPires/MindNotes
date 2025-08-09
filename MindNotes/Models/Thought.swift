@@ -6,13 +6,38 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Thought {
-    var id = UUID()
-    var thought: String
+@Model
+class Thought {
+    var id: UUID
+    var content: String
     var notes: String?
-    var date: Date
+    var createdDate: Date
+    var modifiedDate: Date
     var isFavorite: Bool
-    var tags: [String]?
+    var tags: [String]
     var shouldRemind: Bool
+    var reminderDate: Date?
+    var isCompleted: Bool
+    
+    var journey: Journey?
+    
+    init(content: String, notes: String? = nil, journey: Journey? = nil, tags: [String] = [], shouldRemind: Bool = false, reminderDate: Date? = nil) {
+        self.id = UUID()
+        self.content = content
+        self.notes = notes
+        self.createdDate = Date()
+        self.modifiedDate = Date()
+        self.isFavorite = false
+        self.tags = tags
+        self.shouldRemind = shouldRemind
+        self.reminderDate = reminderDate
+        self.isCompleted = false
+        self.journey = journey
+    }
+    
+    func updateModifiedDate() {
+        self.modifiedDate = Date()
+    }
 }

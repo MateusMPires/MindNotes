@@ -8,21 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var dataManager: DataManager
+    @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
+    @State private var showingWelcome = false
+    
     var body: some View {
-        MainView()
+        JourneyListView()
+            .environmentObject(dataManager)
+            .sheet(isPresented: $showingWelcome) {
+                WelcomeView()
+            }
+            .onAppear {
+                if !hasSeenWelcome {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showingWelcome = true
+                        hasSeenWelcome = true
+                    }
+                }
+            }
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(DataManager.shared)
 }
-
-/*
- Como eu imagino esse app?
- 
- Um app muito simples pra você tirar pensamentos da cabeça.
- Ele precisa ter um Widget
- Parecido com o lembretes
- Talvez classificar por jornadas que voce tem vivido
- Organizacao tipo o Contatos
- Carregar as frases por mês */
