@@ -6,7 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D071DD7A2E48229E00265FA4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D071DD792E48229E00265FA4 /* WidgetKit.framework */; };
+		D071DD7C2E48229E00265FA4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D071DD7B2E48229E00265FA4 /* SwiftUI.framework */; };
+		D071DD892E48229F00265FA4 /* MindNotesWidget-ExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D071DD772E48229E00265FA4 /* MindNotesWidget-ExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		D071DD872E48229F00265FA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D081A5842E2687FF002F43C7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D071DD762E48229E00265FA4;
+			remoteInfo = "MindNotesWidget-ExtensionExtension";
+		};
 		D081A59E2E268801002F43C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D081A5842E2687FF002F43C7 /* Project object */;
@@ -23,13 +36,48 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		D071DD8E2E48229F00265FA4 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D071DD892E48229F00265FA4 /* MindNotesWidget-ExtensionExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		D071DD772E48229E00265FA4 /* MindNotesWidget-ExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "MindNotesWidget-ExtensionExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D071DD792E48229E00265FA4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		D071DD7B2E48229E00265FA4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D081A58C2E2687FF002F43C7 /* MindNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MindNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D081A59D2E268801002F43C7 /* MindNotesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindNotesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D081A5A72E268801002F43C7 /* MindNotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MindNotesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D071DD8A2E48229F00265FA4 /* Exceptions for "MindNotesWidget-Extension" folder in "MindNotesWidget-ExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		D071DD7D2E48229E00265FA4 /* MindNotesWidget-Extension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D071DD8A2E48229F00265FA4 /* Exceptions for "MindNotesWidget-Extension" folder in "MindNotesWidget-ExtensionExtension" target */,
+			);
+			path = "MindNotesWidget-Extension";
+			sourceTree = "<group>";
+		};
 		D081A58E2E2687FF002F43C7 /* MindNotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MindNotes;
@@ -48,6 +96,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D071DD742E48229E00265FA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D071DD7C2E48229E00265FA4 /* SwiftUI.framework in Frameworks */,
+				D071DD7A2E48229E00265FA4 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D081A5892E2687FF002F43C7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,12 +129,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D071DD782E48229E00265FA4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D071DD792E48229E00265FA4 /* WidgetKit.framework */,
+				D071DD7B2E48229E00265FA4 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D081A5832E2687FF002F43C7 = {
 			isa = PBXGroup;
 			children = (
 				D081A58E2E2687FF002F43C7 /* MindNotes */,
 				D081A5A02E268801002F43C7 /* MindNotesTests */,
 				D081A5AA2E268801002F43C7 /* MindNotesUITests */,
+				D071DD7D2E48229E00265FA4 /* MindNotesWidget-Extension */,
+				D071DD782E48229E00265FA4 /* Frameworks */,
 				D081A58D2E2687FF002F43C7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +156,7 @@
 				D081A58C2E2687FF002F43C7 /* MindNotes.app */,
 				D081A59D2E268801002F43C7 /* MindNotesTests.xctest */,
 				D081A5A72E268801002F43C7 /* MindNotesUITests.xctest */,
+				D071DD772E48229E00265FA4 /* MindNotesWidget-ExtensionExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +164,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D071DD8B2E48229F00265FA4 /* Build configuration list for PBXNativeTarget "MindNotesWidget-ExtensionExtension" */;
+			buildPhases = (
+				D071DD732E48229E00265FA4 /* Sources */,
+				D071DD742E48229E00265FA4 /* Frameworks */,
+				D071DD752E48229E00265FA4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D071DD7D2E48229E00265FA4 /* MindNotesWidget-Extension */,
+			);
+			name = "MindNotesWidget-ExtensionExtension";
+			packageProductDependencies = (
+			);
+			productName = "MindNotesWidget-ExtensionExtension";
+			productReference = D071DD772E48229E00265FA4 /* MindNotesWidget-ExtensionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		D081A58B2E2687FF002F43C7 /* MindNotes */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D081A5B12E268801002F43C7 /* Build configuration list for PBXNativeTarget "MindNotes" */;
@@ -102,10 +193,12 @@
 				D081A5882E2687FF002F43C7 /* Sources */,
 				D081A5892E2687FF002F43C7 /* Frameworks */,
 				D081A58A2E2687FF002F43C7 /* Resources */,
+				D071DD8E2E48229F00265FA4 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D071DD882E48229F00265FA4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D081A58E2E2687FF002F43C7 /* MindNotes */,
@@ -173,6 +266,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					D071DD762E48229E00265FA4 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					D081A58B2E2687FF002F43C7 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -203,11 +299,19 @@
 				D081A58B2E2687FF002F43C7 /* MindNotes */,
 				D081A59C2E268801002F43C7 /* MindNotesTests */,
 				D081A5A62E268801002F43C7 /* MindNotesUITests */,
+				D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D071DD752E48229E00265FA4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D081A58A2E2687FF002F43C7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,6 +336,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D071DD732E48229E00265FA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D081A5882E2687FF002F43C7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -256,6 +367,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		D071DD882E48229F00265FA4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */;
+			targetProxy = D071DD872E48229F00265FA4 /* PBXContainerItemProxy */;
+		};
 		D081A59F2E268801002F43C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D081A58B2E2687FF002F43C7 /* MindNotes */;
@@ -269,6 +385,65 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		D071DD8C2E48229F00265FA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GTH77F75XH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MindNotesWidget-Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "MindNotesWidget-Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "mateus.MindNotes.MindNotesWidget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D071DD8D2E48229F00265FA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GTH77F75XH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MindNotesWidget-Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "MindNotesWidget-Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "mateus.MindNotes.MindNotesWidget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		D081A5AF2E268801002F43C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -556,6 +731,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D071DD8B2E48229F00265FA4 /* Build configuration list for PBXNativeTarget "MindNotesWidget-ExtensionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D071DD8C2E48229F00265FA4 /* Debug */,
+				D071DD8D2E48229F00265FA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D081A5872E2687FF002F43C7 /* Build configuration list for PBXProject "MindNotes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

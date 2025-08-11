@@ -10,97 +10,42 @@ import SwiftUI
 struct TodayView: View {
     @StateObject private var thoughtViewModel = ThoughtViewModel()
     @State private var showingNewThought = false
-    @State private var isActivatingComposer = false
     @State private var showJourneys = false
     @State private var showProfile = false
-    
+
+    // MARK: - Computed property para data formatada
+    private var formattedToday: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateStyle = .long
+        return formatter.string(from: Date())
+    }
+
     var body: some View {
         NavigationStack {
-            Group {
+            VStack(alignment: .leading, spacing: 0) {
+                HeaderView(title: "mind notes", subtitle: formattedToday)
+
                 if thoughtViewModel.todayThoughts.isEmpty {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        composerField
-                            .padding(.horizontal)
-                        Spacer()
-                        Text("Nenhum pensamento por enquanto")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    VStack(spacing: 12) {
-                        composerField
-                            .padding(.horizontal)
-                            .padding(.top, 8)
+                    EmptyThoughtsView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         
-                        List {
-                            ForEach(thoughtViewModel.todayThoughts) { thought in
-                                NavigationLink {
-                                    DetailedThoughtView(thought: thought)
-                                        .environmentObject(thoughtViewModel)
-                                } label: {
-                                    ThoughtRowView(thought: thought)
-                                        .environmentObject(thoughtViewModel)
-                                }
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) { thoughtViewModel.deleteThought(thought) } label: {
-                                        Label("Excluir", systemImage: "trash")
-                                    }
-                                    Button { thoughtViewModel.toggleFavorite(thought) } label: {
-                                        Label(thought.isFavorite ? "Desfavoritar" : "Favoritar", systemImage: thought.isFavorite ? "star.slash" : "star")
-                                    }.tint(.gray)
-                                }
-                            }
-                        }
-                        .listStyle(.insetGrouped)
-                    }
+                } else {
+                    ThoughtsListView(thoughts: thoughtViewModel.todayThoughts, viewModel: thoughtViewModel)
                 }
             }
-            .navigationTitle("journey")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         withAnimation(.easeInOut) { showJourneys = true }
                     } label: {
-                        Image(systemName: "folder")
-                    }
-                    .foregroundStyle(.primary)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation(.easeInOut) { showProfile = true }
-                    } label: {
-                        Image(systemName: "person")
-                    }
-                    .foregroundStyle(.primary)
-                }
-                ToolbarItem(placement: .bottomBar) {
-                    HStack {
-                        Button {
-                            showingNewThought = true
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Novo pensamento")
-                            }
-                            .font(.callout.weight(.semibold))
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.primary)
-                        Spacer()
+                        Image(systemName: "tray.circle.fill")
+                            .font(.system(size: 24))
                     }
                 }
             }
-            .fullScreenCover(isPresented: $showJourneys) {
-                NavigationStack {
-                    JourneyListView()
-                        .toolbar {
-                            ToolbarItem(placement: .topBarTrailing) {
-                                Button("Fechar") { showJourneys = false }
-                                    .bold()
-                            }
-                        }
-                }
+            .sheet(isPresented: $showJourneys) {
+                JourneyListView(isShowing: $showJourneys)
             }
             .fullScreenCover(isPresented: $showProfile) {
                 NavigationStack {
@@ -117,50 +62,107 @@ struct TodayView: View {
                 NewThoughtView()
                     .environmentObject(thoughtViewModel)
             }
-            .onAppear { thoughtViewModel.loadThoughts() }
+            .onAppear {
+                thoughtViewModel.loadThoughts()
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            AddThoughtButton {
+                showingNewThought = true
+            }
         }
         .tint(.primary)
     }
-    
-    // MARK: - Composer
-    private var composerField: some View {
-        Button {
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
-                isActivatingComposer = true
-            }
-            // Pequeno atraso para sentir a animação de foco
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                showingNewThought = true
-                isActivatingComposer = false
-            }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "plus")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                Text("Novo pensamento...")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color.secondary.opacity(0.12))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-            )
-            .scaleEffect(isActivatingComposer ? 0.98 : 1.0)
+}
+
+// MARK: - Subviews
+
+struct HeaderView: View {
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.largeTitle)
+                .bold()
+//            Text(subtitle)
+//                .font(.callout)
+//                .foregroundStyle(.secondary)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Adicionar novo pensamento")
+        .padding()
+    }
+}
+
+struct EmptyThoughtsView: View {
+    var body: some View {
+        ContentUnavailableView(
+            "Sem pensamentos",
+            systemImage: "bubble.left.and.bubble.right",
+            description: Text("Adicione um novo pensamento para começar sua jornada.")
+        )
+    }
+}
+
+struct ThoughtsListView: View {
+    let thoughts: [Thought]
+    let viewModel: ThoughtViewModel
+
+    var body: some View {
+        List {
+            ForEach(thoughts) { thought in
+                NavigationLink {
+                    DetailedThoughtView(thought: thought)
+                        .environmentObject(viewModel)
+                } label: {
+                    ThoughtRowView(thought: thought)
+                        .environmentObject(viewModel)
+                }
+                .swipeActions(edge: .trailing) {
+                    // Botão excluir
+                    Button {
+                        viewModel.deleteThought(thought)
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 16, weight: .semibold))
+                            .frame(width: 36, height: 36)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                    }
+                    .tint(.clear) // remove o retângulo de fundo padrão
+
+
+                    
+                    
+                    Button {
+                        viewModel.toggleFavorite(thought)
+                    } label: {
+                        Label(
+                            thought.isFavorite ? "Desfavoritar" : "Favoritar",
+                            systemImage: thought.isFavorite ? "star.slash" : "star"
+                        )
+                    }.tint(.gray)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+    }
+}
+
+struct AddThoughtButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "plus.circle.fill")
+                .font(.system(size: 60))
+                .padding()
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
     TodayView()
 }
-

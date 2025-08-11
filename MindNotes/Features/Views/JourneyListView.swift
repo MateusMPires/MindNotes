@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct JourneyListView: View {
+    @Binding var isShowing: Bool
     @StateObject private var journeyViewModel = JourneyViewModel()
     @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
     @State private var showingCreateJourney = false
@@ -139,24 +140,30 @@ struct JourneyListView: View {
             .navigationTitle("jornadas")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button {
-                            showingCreateJourney = true
-                        } label: {
-                            Label("Nova Jornada", systemImage: "folder.badge.plus")
-                        }
-                        Button {
-                            journeyViewModel.toggleArchivedView()
-                        } label: {
-                            Label(
-                                journeyViewModel.showingArchived ? "Ocultar Arquivadas" : "Mostrar Arquivadas",
-                                systemImage: journeyViewModel.showingArchived ? "eye.slash" : "eye"
-                            )
-                        }
+                    Button {
+                        isShowing.toggle()
                     } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .foregroundColor(.primary)
+                        Label("f", systemImage: "xmark.circle.fill")
                     }
+                    .foregroundStyle(.gray.opacity(0.5))
+//                    Menu {
+//                        Button {
+//                            showingCreateJourney = true
+//                        } label: {
+//                            Label("Nova Jornada", systemImage: "folder.badge.plus")
+//                        }
+//                        Button {
+//                            journeyViewModel.toggleArchivedView()
+//                        } label: {
+//                            Label(
+//                                journeyViewModel.showingArchived ? "Ocultar Arquivadas" : "Mostrar Arquivadas",
+//                                systemImage: journeyViewModel.showingArchived ? "eye.slash" : "eye"
+//                            )
+//                        }
+//                    } label: {
+//                        Image(systemName: "ellipsis.circle")
+//                            .foregroundColor(.primary)
+//                    }
                 }
             }
             .sheet(isPresented: $showingCreateJourney) {
@@ -209,6 +216,6 @@ struct JourneyRowView: View {
 }
 
 #Preview {
-    JourneyListView()
+    JourneyListView(isShowing: .constant(true))
         .environmentObject(ThoughtViewModel())
 }
