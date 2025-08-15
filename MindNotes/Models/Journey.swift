@@ -12,6 +12,7 @@ import SwiftData
 class Journey {
     var id: UUID
     var name: String
+    var notes: String?
     var emoji: String
     var colorHex: String
     var createdDate: Date
@@ -26,6 +27,7 @@ class Journey {
     init(name: String, emoji: String = "📝", colorHex: String = "#007AFF") {
         self.id = UUID()
         self.name = name
+        self.notes = nil
         self.emoji = emoji
         self.colorHex = colorHex
         self.createdDate = Date()

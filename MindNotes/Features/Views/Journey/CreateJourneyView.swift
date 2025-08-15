@@ -11,6 +11,10 @@ struct CreateJourneyView: View {
     @ObservedObject var journeyViewModel: JourneyViewModel
     let journey: Journey?
     
+    // SwiftData...
+    @Environment(\.modelContext) private var context
+
+    
     @Environment(\.dismiss) private var dismiss
     @State private var name: String = ""
     @State private var selectedEmoji: String = "📝"
@@ -69,34 +73,34 @@ struct CreateJourneyView: View {
                         .textInputAutocapitalization(.words)
                 }
                 
-                Section("Emoji") {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
-                        ForEach(availableEmojis, id: \.self) { emoji in
-                            Button {
-                                selectedEmoji = emoji
-                            } label: {
-                                Text(emoji)
-                                    .font(.title2)
-                                    .frame(width: 44, height: 44)
-                                    .background(
-                                        selectedEmoji == emoji ? 
-                                        selectedColor.opacity(0.3) : 
-                                        Color.clear
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(
-                                                selectedEmoji == emoji ? selectedColor : Color.clear,
-                                                lineWidth: 2
-                                            )
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
+//                Section("Emoji") {
+//                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
+//                        ForEach(availableEmojis, id: \.self) { emoji in
+//                            Button {
+//                                selectedEmoji = emoji
+//                            } label: {
+//                                Text(emoji)
+//                                    .font(.title2)
+//                                    .frame(width: 44, height: 44)
+//                                    .background(
+//                                        selectedEmoji == emoji ? 
+//                                        selectedColor.opacity(0.3) : 
+//                                        Color.clear
+//                                    )
+//                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+//                                    .overlay(
+//                                        RoundedRectangle(cornerRadius: 8)
+//                                            .stroke(
+//                                                selectedEmoji == emoji ? selectedColor : Color.clear,
+//                                                lineWidth: 2
+//                                            )
+//                                    )
+//                            }
+//                            .buttonStyle(.plain)
+//                        }
+//                    }
+//                    .padding(.vertical, 8)
+//                }
                 
                 Section("Cor") {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
@@ -152,11 +156,14 @@ struct CreateJourneyView: View {
             journeyViewModel.updateJourney(journey)
         } else {
             // Create new journey
-            journeyViewModel.createJourney(
+            let newJourney = Journey(
                 name: trimmedName,
                 emoji: selectedEmoji,
                 colorHex: selectedColor.toHex()
             )
+            
+            context.insert(newJourney)
+            
         }
     }
 }

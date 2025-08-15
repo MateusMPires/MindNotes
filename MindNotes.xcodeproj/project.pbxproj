@@ -67,6 +67,25 @@
 			);
 			target = D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */;
 		};
+		D071DE192E4C10C500265FA4 /* Exceptions for "MindNotes" folder in "MindNotesWidget-ExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Shared/Fonts/BeVietnamPro-Regular.ttf",
+				"Shared/Fonts/InstrumentSans-Regular.ttf",
+				"Shared/Fonts/Manrope-Regular.ttf",
+				"Shared/Fonts/Outfit-Bold.ttf",
+				"Shared/Fonts/Outfit-Light.ttf",
+				"Shared/Fonts/Outfit-Regular.ttf",
+			);
+			target = D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */;
+		};
+		D071DE1E2E4C110500265FA4 /* Exceptions for "MindNotes" folder in "MindNotes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D081A58B2E2687FF002F43C7 /* MindNotes */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,6 +99,10 @@
 		};
 		D081A58E2E2687FF002F43C7 /* MindNotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D071DE1E2E4C110500265FA4 /* Exceptions for "MindNotes" folder in "MindNotes" target */,
+				D071DE192E4C10C500265FA4 /* Exceptions for "MindNotes" folder in "MindNotesWidget-ExtensionExtension" target */,
+			);
 			path = MindNotes;
 			sourceTree = "<group>";
 		};
@@ -563,6 +586,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = MindNotes/MindNotes.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -571,6 +595,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindNotes/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -603,6 +628,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = MindNotes/MindNotes.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -611,6 +637,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MindNotes/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

@@ -9,41 +9,32 @@ import SwiftUI
 import SwiftData
 
 struct NewThoughtView: View {
-    let journey: Journey?
-    let thoughtToEdit: Thought?
+   
+    // SwiftData...
+    @Environment(\.modelContext) private var context
+    @Query(sort: \Journey.createdDate, order: .forward) private var journeys: [Journey]
+
     
-    @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
+    // NewThoughtView States...
+    
+    @State private var draft: ThoughtDraft = ThoughtDraft()
+    
+    @State private var notes: String = ""
+    
     @Environment(\.dismiss) private var dismiss
     
-    @State private var content: String = ""
-    @State private var notes: String = ""
-    @State private var selectedJourney: Journey?
-    @State private var tags: [String] = []
-    @State private var shouldRemind: Bool = false
-    @State private var reminderDate = Date()
-    @State private var isFavorite: Bool = false
-    @State private var thoughtDate = Date()
     @State private var newTag: String = ""
     @State private var showingJourneyPicker = false
     
     @FocusState private var isContentFocused: Bool
-    @Query private var allJourneys: [Journey]
     
-    private var isEditing: Bool {
-        thoughtToEdit != nil
-    }
-    
-    init(journey: Journey? = nil, thoughtToEdit: Thought? = nil) {
-        self.journey = journey
-        self.thoughtToEdit = thoughtToEdit
-    }
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 // Content Section
                 Section {
-                    TextField("O que você está pensando?", text: $content, axis: .vertical)
+                    TextField("O que você está pensando?", text: $draft.content , axis: .vertical)
                         .lineLimit(3...8)
                         .font(.body)
                         .focused($isContentFocused)
@@ -52,52 +43,115 @@ struct NewThoughtView: View {
                         .lineLimit(2...6)
                         .font(.callout)
                         .foregroundColor(.secondary)
-                } header: {
-                    Text("Pensamento")
                 } footer: {
                     Text("Compartilhe suas reflexões, ideias e momentos de insight.")
                 }
                 
-                // Journey Section
-                Section("Jornada") {
-                    Button {
-                        showingJourneyPicker = true
-                    } label: {
-                        HStack {
-                            if let selectedJourney = selectedJourney {
-                                Text(selectedJourney.emoji)
-                                    .font(.title3)
-                                    .frame(width: 28, height: 28)
-                                    .background(Color(hex: selectedJourney.colorHex).opacity(0.2))
-                                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                                
-                                Text(selectedJourney.name)
-                                    .foregroundColor(.primary)
-                            } else {
-                                Image(systemName: "folder")
-                                    .foregroundColor(.secondary)
-                                    .frame(width: 28, height: 28)
-                                
-                                Text("Selecionar jornada")
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                //Details Section...
+                Section {
+                    NavigationLink {
+                        OtherView(draft: $draft) { 
+                            saveThought()
                         }
                     }
-                    .buttonStyle(.plain)
+                    label: {
+                        Text("Detalhes")
+                    }
                 }
                 
+                
+                // Journey Section...
+                Section {
+                    Picker(selection: $draft.journey ) {
+                        if journeys.isEmpty {
+                            ContentUnavailableView("Sem jornadas por enquanto...", image: "")
+                        } else {
+                            ForEach(journeys, id: \.self) { journey in
+                                Text(journey.name)
+                                    .tag(journey)
+                            }
+                        }
+                    } label: {
+                        Text("Jornada")
+                    }
+                    .pickerStyle(.navigationLink)
+                }
+            }
+            .navigationTitle("Novo Pensamento")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancelar") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Criar") {
+                        saveThought()
+                    }
+                    .fontWeight(.bold)
+                    .disabled(draft.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+        .onAppear(perform: {
+            isContentFocused = true
+        })
+    }
+    
+    private func addTag() {
+        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedTag.isEmpty && !draft.tags.contains(trimmedTag) {
+            draft.tags.append(trimmedTag)
+            newTag = ""
+        }
+    }
+    
+    private func removeTag(_ tag: String) {
+        //tags.removeAll { $0 == tag }
+    }
+    
+    private func saveThought() {
+        let trimmedContent = draft.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Create new thought
+        let newThought = Thought(
+            content: trimmedContent,
+            notes: trimmedNotes.isEmpty ? nil : trimmedNotes,
+            tags: draft.tags,
+            shouldRemind: draft.shouldRemind,
+            reminderDate: draft.shouldRemind ? draft.reminderDate : nil,
+            createdDate: draft.createdDate,
+            isFavorite: draft.isFavorite,
+            journey: draft.journey
+        )
+        
+        context.insert(newThought)
+        dismiss()
+    }
+}
+
+struct OtherView: View {
+    
+    @Binding var draft: ThoughtDraft
+    
+    @State private var newTag: String = ""
+
+    
+    // Closure que será passada pelo OtherView
+    var onSave: (() -> Void)?
+    
+    var body: some View {
+        VStack {
+            Form {
                 // Tags Section
                 Section("Etiquetas") {
-                    if !tags.isEmpty {
+                    if !draft.tags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(tags, id: \.self) { tag in
+                                ForEach(draft.tags, id: \.self) { tag in
                                     HStack(spacing: 4) {
                                         Text("#\(tag)")
                                             .font(.caption)
@@ -140,196 +194,65 @@ struct NewThoughtView: View {
                 
                 // Date Section
                 Section("Data e Hora") {
-                    DatePicker("Quando isso aconteceu?", selection: $thoughtDate, displayedComponents: [.date, .hourAndMinute])
-                        .datePickerStyle(.compact)
+                    DatePicker("", selection: $draft.createdDate, in: ...Date(), displayedComponents: [.date])
+                        .datePickerStyle(.graphical)
+                        
                 }
                 
                 // Reminder Section
                 Section {
-                    Toggle(isOn: $shouldRemind) {
+                    Toggle(isOn: $draft.shouldRemind) {
                         Label("Lembrete futuro", systemImage: "bell.fill")
                             .foregroundStyle(.orange)
                     }
                     
-                    if shouldRemind {
-                        DatePicker("Lembrar em", selection: $reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    if draft.shouldRemind {
+                        DatePicker("Lembrar em", selection: $draft.reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                             .datePickerStyle(.compact)
                     }
                 } footer: {
-                    if shouldRemind {
+                    if draft.shouldRemind {
                         Text("Você receberá uma notificação para relembrar este pensamento.")
                     }
                 }
                 
                 // Favorite Section
                 Section {
-                    Toggle(isOn: $isFavorite) {
+                    Toggle(isOn: $draft.isFavorite) {
                         Label("Favorito", systemImage: "star.fill")
                             .foregroundStyle(.yellow)
                     }
                 }
             }
-            .navigationTitle(isEditing ? "Editar Pensamento" : "Novo Pensamento")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(isEditing ? "Salvar" : "Criar") {
-                        saveThought()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-            .sheet(isPresented: $showingJourneyPicker) {
-                JourneyPickerView(selectedJourney: $selectedJourney)
-            }
-            .onAppear {
-                setupInitialState()
-                if !isEditing {
-                    isContentFocused = true
-                }
-            }
         }
-    }
-    
-    private func setupInitialState() {
-        if let thoughtToEdit = thoughtToEdit {
-            // Editing existing thought
-            content = thoughtToEdit.content
-            notes = thoughtToEdit.notes ?? ""
-            selectedJourney = thoughtToEdit.journey
-            tags = thoughtToEdit.tags
-            shouldRemind = thoughtToEdit.shouldRemind
-            reminderDate = thoughtToEdit.reminderDate ?? Date()
-            isFavorite = thoughtToEdit.isFavorite
-            thoughtDate = thoughtToEdit.createdDate
-        } else {
-            // New thought
-            selectedJourney = journey
-            thoughtDate = Date()
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    onSave?()
+                } label: {
+                    Text("Criar")
+                }
+                .bold()
+                .disabled(draft.content.isEmpty)
+
+            }
         }
     }
     
     private func addTag() {
         let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedTag.isEmpty && !tags.contains(trimmedTag) {
-            tags.append(trimmedTag)
+        if !trimmedTag.isEmpty && !draft.tags.contains(trimmedTag) {
+            draft.tags.append(trimmedTag)
             newTag = ""
         }
     }
     
     private func removeTag(_ tag: String) {
-        tags.removeAll { $0 == tag }
-    }
-    
-    private func saveThought() {
-        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if isEditing, let thoughtToEdit = thoughtToEdit {
-            // Update existing thought
-            thoughtToEdit.content = trimmedContent
-            thoughtToEdit.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
-            thoughtToEdit.journey = selectedJourney
-            thoughtToEdit.tags = tags
-            thoughtToEdit.shouldRemind = shouldRemind
-            thoughtToEdit.reminderDate = shouldRemind ? reminderDate : nil
-            thoughtToEdit.isFavorite = isFavorite
-            thoughtViewModel.updateThought(thoughtToEdit)
-        } else {
-            // Create new thought
-            thoughtViewModel.createThought(
-                content: trimmedContent,
-                notes: trimmedNotes.isEmpty ? nil : trimmedNotes,
-                tags: tags,
-                shouldRemind: shouldRemind,
-                reminderDate: shouldRemind ? reminderDate : nil,
-                createdDate: thoughtDate,
-                isFavorite: isFavorite
-            )
-        }
-        
-        dismiss()
-    }
-}
-
-struct JourneyPickerView: View {
-    @Binding var selectedJourney: Journey?
-    @Environment(\.dismiss) private var dismiss
-    @Query private var journeys: [Journey]
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Button {
-                        selectedJourney = nil
-                        dismiss()
-                    } label: {
-                        HStack {
-                            Image(systemName: selectedJourney == nil ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(selectedJourney == nil ? .blue : .secondary)
-                            
-                            Text("Sem jornada")
-                                .foregroundColor(.primary)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-                
-                if !journeys.filter({ !$0.isArchived }).isEmpty {
-                    Section("Jornadas") {
-                        ForEach(journeys.filter { !$0.isArchived }) { journey in
-                            Button {
-                                selectedJourney = journey
-                                dismiss()
-                            } label: {
-                                HStack {
-                                    Image(systemName: selectedJourney?.id == journey.id ? "checkmark.circle.fill" : "circle")
-                                        .foregroundColor(selectedJourney?.id == journey.id ? .blue : .secondary)
-                                    
-                                    Text(journey.emoji)
-                                        .font(.title3)
-                                        .frame(width: 28, height: 28)
-                                        .background(Color(hex: journey.colorHex).opacity(0.2))
-                                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                                    
-                                    Text(journey.name)
-                                        .foregroundColor(.primary)
-                                    
-                                    Spacer()
-                                    
-                                    Text("\(journey.thoughtCount)")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Selecionar Jornada")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Concluído") {
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
-                }
-            }
-        }
+        draft.tags.removeAll { $0 == tag }
     }
 }
 
 #Preview {
     NewThoughtView()
-        .environmentObject(ThoughtViewModel())
+        //.environmentObject(ThoughtViewModel())
 }

@@ -12,7 +12,8 @@ struct MindNotesWidget: Widget {
         )
         .configurationDisplayName("MindNotes")
         .description("Entradas")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall]) // Specify small Lock Screen families
+
     }
 }
 
@@ -20,49 +21,58 @@ struct MindNotesWidgetView: View {
     var entry: MindNotesTimelineEntry
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) {
             HStack {
                 Text("Sequência")
-                    .font(.system(size: 12))
-                    .bold()
-                    .fontDesign(.rounded)
+                    .font(.custom("Outfit-Regular", size: 12))
+                //.bold()
+                    
                 
                 Spacer()
+                
+                Image(systemName: "brain.fill")
+                    .font(.system(size: 16))
             }
             //.padding(.top)
             
             VStack(spacing: -8) {
                 Text("2")
-                    .font(.system(size: 50))
+                    .font(.custom("Manrope-Regular", size: 50))
                     .bold()
+                    .contentTransition(.numericText())
                 
                 Text("Dias")
-                    .font(.system(size: 12))
+                    .font(.custom("Outfit-Regular", size: 12))
                     .bold()
 
             }
             
-            Button {
-                // Deep link será tratado pelo widgetURL
-
-            } label: {
-                Label("Nova entrada", systemImage: "square.and.pencil")
-             
-            }
-            .frame(maxWidth: .infinity)
-            .font(.system(size: 12).bold())
-            //                    .background(.white)
-            .foregroundColor(.white)
-            .widgetURL(URL(string: "MindNotes//NewThoughtView"))
+//            Button {
+//                // Deep link será tratado pelo widgetURL
+//
+//            } label: {
+//                Label("Nova entrada", systemImage: "square.and.pencil")
+//                   
+//
+//            }
+            
+            //.frame(maxWidth: .infinity)
+            //.font(.system(size: 12).bold())
+                 //               .background(.white)
+            //.foregroundColor(.white)
+            .widgetURL(URL(string: "mindnotes://new-thought"))
 //
        
-//            Spacer()
+            Spacer()
 //            
 //            Text("Novo Pensamento")
 //                .font(.caption)
 //                .foregroundColor(.white)
 //                .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        //.background(.yellow)
+        .widgetURL(URL(string: "mindnotes://open-app"))
         .foregroundColor(.white)
         .containerBackground(for: .widget) {
 //            LinearGradient(
@@ -70,7 +80,8 @@ struct MindNotesWidgetView: View {
 //                startPoint: .topLeading,
 //                endPoint: .bottomTrailing
 //            )
-            Color.black.opacity(0.85)
+            //Color("#131313").ignoresSafeArea()
+            Color.widgetBackground
         }
     }
 }

@@ -26,12 +26,12 @@ class Thought {
     init(
         content: String,
         notes: String? = nil,
-        journey: Journey? = nil,
         tags: [String] = [],
         shouldRemind: Bool = false,
         reminderDate: Date? = nil,
         createdDate: Date = Date(),
-        isFavorite: Bool = false
+        isFavorite: Bool = false,
+        journey: Journey? = nil
     ) {
         self.id = UUID()
         self.content = content
@@ -50,3 +50,12 @@ class Thought {
         self.modifiedDate = Date()
     }
 }
+
+// MARK: - Predefined Journeys
+extension Thought {
+    static let defaultThoughts = [
+        Thought(content: "Hello, World!"),
+        Thought(content: "Swift is awesome!")
+    ]
+}
+

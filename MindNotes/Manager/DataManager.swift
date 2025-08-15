@@ -75,12 +75,12 @@ class DataManager: ObservableObject {
         let thought = Thought(
             content: content,
             notes: notes,
-            journey: journey,
             tags: tags,
             shouldRemind: shouldRemind,
             reminderDate: reminderDate,
             createdDate: createdDate,
-            isFavorite: isFavorite
+            isFavorite: isFavorite,
+            journey: journey
         )
         context.insert(thought)
         saveContext()
@@ -130,6 +130,17 @@ class DataManager: ObservableObject {
         } catch {
             print("Failed to fetch thoughts with tag: \(error)")
             return []
+        }
+    }
+    
+    func setupDefaultThoughts() {
+        let existingThoughts = fetchThoughts(withTag: "")
+        
+        if existingThoughts.isEmpty {
+            Thought.defaultThoughts.forEach { journey in
+                context.insert(journey)
+            }
+            saveContext()
         }
     }
     

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct TagFilterView: View {
-    @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
+    //@EnvironmentObject private var thoughtViewModel: ThoughtViewModel
+    @StateObject private var thoughtViewModel: ThoughtViewModel = ThoughtViewModel()
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
