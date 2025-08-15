@@ -9,7 +9,24 @@ import SwiftUI
 import SwiftData
 
 struct ThoughtListView: View {
+    
+    @Environment(\.modelContext) private var context
     let journey: Journey?
+//
+    //@Query(filter: #Predicate { $0.journeyId == journey.id }) var thoughts: [Thought]
+
+//
+//      init(journey: Journey) {
+//          self.journey = journey
+//          
+//          // Predicate para filtrar pensamentos da jornada
+//          let predicate = Predicate<Thought> { $0.journeyId == journey.id }
+//
+//          // Inicializa o Query com filtro e ordena pela data de criação
+//          _thoughts = Query(filter: predicate, sort: \.createdDate, order: .forward)
+//      }
+      
+    
     let favoritesOnly: Bool
     
     @EnvironmentObject private var thoughtViewModel: ThoughtViewModel

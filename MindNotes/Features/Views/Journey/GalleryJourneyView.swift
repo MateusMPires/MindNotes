@@ -8,71 +8,78 @@
 import SwiftUI
 import SwiftData
 
-struct JourneyListView: View {
-    @Binding var isShowing: Bool
+// GalleryView...
+struct GalleryJourneyView: View {
+    
+    //SwiftData...
+    @Query(sort: \Journey.createdDate, order: .forward) private var journeys: [Journey]
+
+    
     @StateObject private var journeyViewModel = JourneyViewModel()
-    @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
+    
+    @Binding var showJourneyView: Bool
+
     @State private var showingCreateJourney = false
     @State private var selectedJourney: Journey?
     
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    NavigationLink {
-                        ThoughtListView(journey: nil)
-                            .environmentObject(thoughtViewModel)
-                    } label: {
-                        HStack {
-                            Image(systemName: "tray.full.fill")
-                                .foregroundColor(.primary)
-                                .font(.title3)
-                                .frame(width: 32, height: 32)
-                                .background(Color.secondary.opacity(0.15))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("minha mente")
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                                
-                                Text("\(thoughtViewModel.thoughts.count) pensamentos")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                        }
-                    }
-                    
-                    NavigationLink {
-                        ThoughtListView(journey: nil, favoritesOnly: true)
-                            .environmentObject(thoughtViewModel)
-                    } label: {
-                        HStack {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.primary)
-                                .font(.title3)
-                                .frame(width: 32, height: 32)
-                                .background(Color.secondary.opacity(0.15))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("favoritos")
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                                Text("\(thoughtViewModel.thoughts.filter(\.isFavorite).count) pensamentos")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                        }
-                    }
-                }
+//                Section {
+//                    NavigationLink {
+//                        ThoughtListView(journey: nil)
+//                    } label: {
+//                        HStack {
+//                            Image(systemName: "tray.full.fill")
+//                                .foregroundColor(.primary)
+//                                .font(.title3)
+//                                .frame(width: 32, height: 32)
+//                                .background(Color.secondary.opacity(0.15))
+//                                .clipShape(RoundedRectangle(cornerRadius: 8))
+//                            
+//                            VStack(alignment: .leading, spacing: 2) {
+//                                Text("minha mente")
+//                                    .font(.body)
+//                                    .fontWeight(.medium)
+//                                
+//                                Text("\(thoughtViewModel.thoughts.count) pensamentos")
+//                                    .font(.caption)
+//                                    .foregroundColor(.secondary)
+//                            }
+//                            Spacer()
+//                        }
+//                    }
+//                    
+//                    NavigationLink {
+//                        ThoughtListView(journey: nil, favoritesOnly: true)
+//                            .environmentObject(thoughtViewModel)
+//                    } label: {
+//                        HStack {
+//                            Image(systemName: "star.fill")
+//                                .foregroundColor(.primary)
+//                                .font(.title3)
+//                                .frame(width: 32, height: 32)
+//                                .background(Color.secondary.opacity(0.15))
+//                                .clipShape(RoundedRectangle(cornerRadius: 8))
+//                            VStack(alignment: .leading, spacing: 2) {
+//                                Text("favoritos")
+//                                    .font(.body)
+//                                    .fontWeight(.medium)
+//                                Text("\(thoughtViewModel.thoughts.filter(\.isFavorite).count) pensamentos")
+//                                    .font(.caption)
+//                                    .foregroundColor(.secondary)
+//                            }
+//                            Spacer()
+//                        }
+//                    }
+//                }
                 
                 Section("Jornadas") {
-                    ForEach(journeyViewModel.journeys) { journey in
+                    ForEach(journeys) { journey in
                         NavigationLink {
-                            ThoughtListView(journey: journey)
-                                .environmentObject(thoughtViewModel)
+                            // Thoughts for that Journey...
+                            //ThoughtListView(journey: journey)
+                            
                         } label: {
                             JourneyRowView(journey: journey)
                         }
@@ -115,8 +122,8 @@ struct JourneyListView: View {
                     Section("Arquivadas") {
                         ForEach(journeyViewModel.journeys.filter(\.isArchived)) { journey in
                             NavigationLink {
-                                ThoughtListView(journey: journey)
-                                    .environmentObject(thoughtViewModel)
+                               // ThoughtListView(journey: journey)
+                               //     .environmentObject(thoughtViewModel)
                             } label: {
                                 JourneyRowView(journey: journey)
                             }
@@ -141,7 +148,7 @@ struct JourneyListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        isShowing.toggle()
+                        showJourneyView.toggle()
                     } label: {
                         Label("f", systemImage: "xmark.circle.fill")
                     }
@@ -173,10 +180,10 @@ struct JourneyListView: View {
                 )
                 .onDisappear { selectedJourney = nil }
             }
-            .onAppear {
-                journeyViewModel.loadJourneys()
-                thoughtViewModel.loadThoughts()
-            }
+//            .onAppear {
+//                journeyViewModel.loadJourneys()
+//                thoughtViewModel.loadThoughts()
+//            }
         }
     }
     
@@ -216,6 +223,6 @@ struct JourneyRowView: View {
 }
 
 #Preview {
-    JourneyListView(isShowing: .constant(true))
+    GalleryJourneyView(showJourneyView: .constant(true))
         .environmentObject(ThoughtViewModel())
 }
