@@ -8,6 +8,11 @@ struct ContentView: View {
     @State private var showJourneys = false
     @State private var showProfile = false
 
+    @State private var selectedThought: Thought?
+
+
+    let journeys: [Journey]
+    
     // SwiftData...
     @Environment(\.modelContext) private var context
     @Query(sort: \Thought.createdDate, order: .reverse) private var thoughts: [Thought]
@@ -18,6 +23,12 @@ struct ContentView: View {
         formatter.locale = Locale(identifier: "pt_BR")
         formatter.dateStyle = .long
         return formatter.string(from: Date())
+    }
+    
+    // Inicializador que recebe os journeys
+    init(journeys: [Journey] = []) {
+        self.journeys = journeys
+        print(journeys)
     }
     
     // MainView...
@@ -36,48 +47,16 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 24)
                     
-                    LastThoughtView(thoughts.first ?? Thought(content: "Sem nenhum pensamento por enquanto..."))
-                        .padding()
+                    Button {
+                        selectedThought = thoughts.first
+                    } label: {
+                        LastThoughtView(thoughts.first ?? Thought(content: "Sem nenhum pensamento por enquanto..."))
+                            .padding()
+                    }
                 }
-//                VStack(alignment: .leading, spacing: 16) {
-//                    Text("Último registro")
-//                        .font(.callout)
-//                        .foregroundStyle(.secondary)
-//                    
-//                    Text("Alguma frase muito massa")
-//                }
-//                    .padding()
-//                    .padding(.horizontal)
-//                    .background {
-//                        TransparentBlurView(removeAllFilters: true)
-//                            .blur(radius: 9, opaque: true)
-//                            // Adjust this opacity to a more glossy feel
-//                            .background(.white.opacity(0.05))
-//                    }
-//                    .clipShape(.rect(cornerRadius: 12, style: .continuous))
-//                    .background {
-//                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-//                            .stroke(.white.opacity(0.3), lineWidth: 1)
-//                    }
-                
-//                Spacer()
-//                VStack {
-//                    Text("Aqui vai ser tipo os meus pensamentos")
-//                        
-//                }
-//                .padding(.vertical, 60)
-//                .hidden()
-//                
-//                Text("Hoje")
-//                    .font(.title3)
-//                    .padding(.horizontal)
-//                
-//                if thoughts.isEmpty {
-//                    emptyThoughtsView
-//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                } else {
-//                    thoughtsListView
-//                }
+            }
+            .navigationDestination(item: $selectedThought) { thought in
+                DetailedThoughtView(thought: thought)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
@@ -134,18 +113,15 @@ struct ContentView: View {
 //                    .opacity(0.7)
                 
             }
-            .onAppear {
-                context.insert(Thought(content: "Eu fiz isso e aquilo e aquilo e aquilo e aquilo", notes: "Eu fiz isso e isso e isso aqui e isso e isso e isso", tags: ["Conclusão"], shouldRemind: false))
-            }
+//            .onAppear {
+//                context.insert(Thought(content: "Eu fiz isso e aquilo e aquilo e aquilo e aquilo", notes: "Eu fiz isso e isso e isso aqui e isso e isso e isso", tags: ["Conclusão"], shouldRemind: false))
+//            }
             .sheet(isPresented: $showJourneys) {
                 GalleryJourneyView(showJourneyView: $showJourneys)
             }
             .sheet(isPresented: $addNewThought) {
-                NewThoughtView()
+                NewThoughtView(journeys: journeys)
             }
-//            .safeAreaInset(edge: .bottom) {
-//                addThoughtButton
-//            }
         }
         .tint(.primary)
 
@@ -176,17 +152,8 @@ struct ContentView: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
+                
                 Spacer()
-                
-                
-//                Button {
-//                    
-//                } label: {
-//                    Image(systemName: "magnifyingglass.circle.fill")
-//                        .font(.system(size: 32))
-//                        .symbolRenderingMode(.hierarchical)
-//
-//                }
                 
                 Button {
                     withAnimation(.easeInOut) { showJourneys = true }
@@ -195,7 +162,6 @@ struct ContentView: View {
                         .font(.system(size: 20))
                         .symbolRenderingMode(.hierarchical)
                 }
-                //.padding(.horizontal, 16)
                 .padding(.bottom)
             }
         }
@@ -217,12 +183,12 @@ struct ContentView: View {
 //                NavigationLink {
 //                    DetailedThoughtView(thought: thought)
 //                        .environmentObject(thoughtViewModel)
-//                } label: {
-                    ThoughtRowView(thought: thought)
+                //                } label: {
+                ThoughtRowView(thought: thought)
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
-
-               // }
+                
+                // }
                     .swipeActions(edge: .leading) {
                         Button {
                             deleteThought(thought)
@@ -234,65 +200,50 @@ struct ContentView: View {
                         }
                         .tint(.clear)
                     }
-                .swipeActions(edge: .trailing) {
-                    // Botão excluir
-                    Button {
-                        deleteThought(thought)
+                    .swipeActions(edge: .trailing) {
+                        // Botão excluir
+                        Button {
+                            deleteThought(thought)
+                            
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.system(size: 32, weight: .semibold))
+                                .foregroundStyle(.red)
+                        }
+                        .tint(.clear)
                         
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(.red)
+                        
+                        Button {
+                            //thoughtViewModel.toggleFavorite(thought)
+                        } label: {
+                            Image(systemName: "pencil")
+                        }
+                        .tint(.clear)
+                        .clipShape(Circle())
                     }
-                    .tint(.clear)
-
-
-                    Button {
-                        //thoughtViewModel.toggleFavorite(thought)
-                    } label: {
-                        Image(systemName: "pencil")
-                    }
-                    .tint(.clear)
-                    .clipShape(Circle())
-                }
             }
         }
         .padding(.top)
         .listStyle(.plain)
         .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
-
+        
 
     }
     
     private var addThoughtButton: some View {
         VStack(spacing: 8) {
-            
-//            Text("O que você está pensando agora?")
-//                .multilineTextAlignment(.center)
-//                .font(.custom("Outfit-Regular", size: 36))
-//                //.font(.system(size: 36))
-
             Button {
                 addNewThought = true
             } label: {
                 Image(systemName: "lightbulb.circle.fill")
                     .font(.system(size: 40))
-//                    .foregroundStyle( Color(hex: "#5CBE7D"))
+                //                    .foregroundStyle( Color(hex: "#5CBE7D"))
                     .foregroundStyle(.primary)
                     .padding(20)
                     .bold()
-//                    .background(
-//                        Color(hex: "#5CBE7D")
-//                        //.secondary
-//                    )
-                //                .background(Color(hex: "#00C489"))
-                    //.clipShape(Circle())
             }
-            //.frame(maxWidth: .infinity)
         }
-        
-        
     }
     
     private func deleteThought(_ thought: Thought) {
@@ -303,13 +254,12 @@ struct ContentView: View {
     func LastThoughtView(_ thought: Thought) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .center, spacing: 24) {
-               
-                    //.padding(.horizontal)
                 
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(thought.content)
                             .font(.custom("Manrope-Regular", size: 16))
+                            .multilineTextAlignment(.leading)
                         
                         if let notes = thought.notes, !notes.isEmpty {
                             Image(systemName: "line.3.horizontal")
@@ -317,29 +267,30 @@ struct ContentView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.horizontal, 4)
+                    .padding(.leading, 4)
                     
                     Spacer()
                 }
             }
+            
             Divider()
             
             HStack {
-                if !thought.tags.isEmpty {
                     HStack(spacing: 6) {
-                        ForEach(thought.tags, id: \.self) { tag in
-                            Text("#\(tag)")
-                                .font(.custom("Manrope-Regular", size: 10))
-                                .textCase(.lowercase)
-                                .padding(.leading, 8)
-                                .padding(.vertical, 3)
-                                .foregroundColor(.primary)
+                        if !thought.tags.isEmpty {
+                            ForEach(thought.tags, id: \.self) { tag in
+                                Text("#\(tag)")
+                                    .font(.custom("Manrope-Regular", size: 10))
+                                    .textCase(.lowercase)
+                                    .padding(.leading, 8)
+                                    .padding(.vertical, 3)
+                                    .foregroundColor(.primary)
+                            }
                         }
-                        
-                        Text(thought.journey == nil ? "em minha mente" : (thought.journey?.name ?? ""))
+                        Text(thought.journey?.name ?? "em minha mente")
                             .font(.custom("Manrope-Regular", size: 10))
                             .italic()
-
+                        
                         Spacer()
                         
                         VStack(alignment: .trailing, spacing: 4) {
@@ -359,7 +310,7 @@ struct ContentView: View {
                     .padding(.horizontal, 1)
                     .foregroundColor(.secondary)
                 }
-            }
+            
         }
         .padding()
         .background {
@@ -373,7 +324,7 @@ struct ContentView: View {
                 .stroke(.white.opacity(0.3), lineWidth: 1)
         }
     }
-
+    
 }
 
 #Preview {
@@ -382,113 +333,8 @@ struct ContentView: View {
 
 }
 
-struct ThoughtRowView: View {
-    let thought: Thought
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                
-//                Circle()
-//                    .frame(width: 16, height: 24)
-//                    .foregroundColor(.primary.opacity(0.3))
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(thought.content)
-                          //.font(.custom("InstrumentSans-Regular", size: 16))
-                          .font(.custom("Manrope-Regular", size: 16))
 
-                        //.fontWeight(.medium)
-                        //.lineLimit(3)
-                    
-                    if let notes = thought.notes, !notes.isEmpty {
-                        Image(systemName: "line.3.horizontal")
-                        //Text(notes)
-                            .font(.callout)
-                            .foregroundColor(.secondary)
-                            //.lineLimit(2)
-                    }
-                }
-                .padding(.horizontal, 4)
-                
-                Spacer()
-                
-            }
-            
-            Divider()
-            
-            HStack {
-                
-//                Text(formatDate(thought.createdDate))
-//                    .font(.caption2)
-//                    .foregroundColor(.secondary)
-//                
-//                Spacer()
-//
-                if !thought.tags.isEmpty {
-                        HStack(spacing: 6) {
-                            ForEach(thought.tags, id: \.self) { tag in
-                                Text("#\(tag)")
-                                    .font(.custom("Manrope-Regular", size: 10))
-                                    //.font(.caption2)
-                                    .textCase(.lowercase)
-                                    .padding(.leading, 8)
-                                    .padding(.vertical, 3)
-                                    //.background(Color.blue.opacity(0.1))
-                                    .foregroundColor(.primary)
-                                    //.clipShape(Capsule())
-                            }
-                            
-                            Text("em luto")
-                                .font(.custom("Manrope-Regular", size: 10))
-                                //.bold()
-                                .italic()
 
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 4) {
-                                if thought.isFavorite {
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
-                                        .font(.caption)
-                                }
-                                
-                                if thought.shouldRemind {
-                                    Image(systemName: "bell.fill")
-                                        .foregroundColor(.orange)
-                                        .font(.caption2)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 1)
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-        .padding()
-        .background {
-            TransparentBlurView(removeAllFilters: true)
-                .blur(radius: 9, opaque: true)
-                // Adjust this opacity to a more glossy feel
-                .background(.white.opacity(0.05))
-        }
-        .clipShape(.rect(cornerRadius: 12, style: .continuous))
-        .background {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(.white.opacity(0.3), lineWidth: 1)
-        }
-    }
-    
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "pt_BR")
-        formatter.dateFormat = "EEEE, d 'de' MMM"
-        return formatter.string(from: date)
-            .capitalized  // Para garantir que a primeira letra seja maiúscula
-    }
-
-}
-
-#Preview {
-    ThoughtRowView(thought: .init(content: "kdshjf"))
-}
+//#Preview {
+//    ThoughtRowView(thought: .init(content: "kdshjf"))
+//}

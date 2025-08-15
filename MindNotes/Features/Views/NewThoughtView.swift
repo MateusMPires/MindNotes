@@ -10,34 +10,31 @@ import SwiftData
 
 struct NewThoughtView: View {
    
-    // SwiftData...
     @Environment(\.modelContext) private var context
-    @Query(sort: \Journey.createdDate, order: .forward) private var journeys: [Journey]
-
-    
-    // NewThoughtView States...
-    
-    @State private var draft: ThoughtDraft = ThoughtDraft()
-    
-    @State private var notes: String = ""
-    
     @Environment(\.dismiss) private var dismiss
     
+    // Receber journeys como parâmetro
+    let journeys: [Journey]
+    
+    // NewThoughtView States...
+    @State var draft: ThoughtDraft = ThoughtDraft()
+    @State private var notes: String = ""
     @State private var newTag: String = ""
     @State private var showingJourneyPicker = false
     
-    @FocusState private var isContentFocused: Bool
-    
-
+    // Inicializador que recebe os journeys
+    init(journeys: [Journey] = []) {
+        self.journeys = journeys
+    }
+        
     var body: some View {
         NavigationStack {
             Form {
                 // Content Section
                 Section {
-                    TextField("O que você está pensando?", text: $draft.content , axis: .vertical)
+                    TextField("O que você está pensando?", text: $draft.content, axis: .vertical)
                         .lineLimit(3...8)
                         .font(.body)
-                        .focused($isContentFocused)
                     
                     TextField("Notas adicionais...", text: $notes, axis: .vertical)
                         .lineLimit(2...6)
@@ -50,31 +47,31 @@ struct NewThoughtView: View {
                 //Details Section...
                 Section {
                     NavigationLink {
-                        OtherView(draft: $draft) { 
+                        OtherView(draft: $draft) {
                             saveThought()
                         }
-                    }
-                    label: {
+                    } label: {
                         Text("Detalhes")
                     }
                 }
                 
-                
-                // Journey Section...
-                Section {
-                    Picker(selection: $draft.journey ) {
-                        if journeys.isEmpty {
-                            ContentUnavailableView("Sem jornadas por enquanto...", image: "")
-                        } else {
+                // Journey Section - Usando journeys recebidos como parâmetro
+                Section("Jornada") {
+                    if journeys.isEmpty {
+                        Text("Minha Mente")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Picker("Jornada", selection: $draft.journey) {
+                            Text("Minha Mente")
+                                .tag(nil as Journey?)
+                            
                             ForEach(journeys, id: \.self) { journey in
-                                Text(journey.name)
-                                    .tag(journey)
+                                Text("\(journey.emoji) \(journey.name)")
+                                    .tag(journey as Journey?)
                             }
                         }
-                    } label: {
-                        Text("Jornada")
+                        .pickerStyle(.navigationLink)
                     }
-                    .pickerStyle(.navigationLink)
                 }
             }
             .navigationTitle("Novo Pensamento")
@@ -95,9 +92,7 @@ struct NewThoughtView: View {
                 }
             }
         }
-        .onAppear(perform: {
-            isContentFocused = true
-        })
+        // Removido .task pois não precisamos mais buscar journeys
     }
     
     private func addTag() {
@@ -109,7 +104,7 @@ struct NewThoughtView: View {
     }
     
     private func removeTag(_ tag: String) {
-        //tags.removeAll { $0 == tag }
+        draft.tags.removeAll { $0 == tag }
     }
     
     private func saveThought() {
@@ -123,12 +118,26 @@ struct NewThoughtView: View {
             tags: draft.tags,
             shouldRemind: draft.shouldRemind,
             reminderDate: draft.shouldRemind ? draft.reminderDate : nil,
-            createdDate: draft.createdDate,
-            isFavorite: draft.isFavorite,
             journey: draft.journey
         )
         
+        print(newThought.journey)
+        
+        // Definir data de criação se especificada
+        if draft.createdDate != Date() {
+            newThought.createdDate = draft.createdDate
+        }
+        
+        newThought.isFavorite = draft.isFavorite
+        
         context.insert(newThought)
+        
+        do {
+            try context.save()
+        } catch {
+            print("Erro ao salvar pensamento: \(error)")
+        }
+        
         dismiss()
     }
 }
@@ -136,9 +145,7 @@ struct NewThoughtView: View {
 struct OtherView: View {
     
     @Binding var draft: ThoughtDraft
-    
     @State private var newTag: String = ""
-
     
     // Closure que será passada pelo OtherView
     var onSave: (() -> Void)?
@@ -196,7 +203,6 @@ struct OtherView: View {
                 Section("Data e Hora") {
                     DatePicker("", selection: $draft.createdDate, in: ...Date(), displayedComponents: [.date])
                         .datePickerStyle(.graphical)
-                        
                 }
                 
                 // Reminder Section
@@ -234,7 +240,6 @@ struct OtherView: View {
                 }
                 .bold()
                 .disabled(draft.content.isEmpty)
-
             }
         }
     }
@@ -252,7 +257,40 @@ struct OtherView: View {
     }
 }
 
+// MARK: - Exemplos de uso na view pai
+
+struct ParentView: View {
+    @Query(sort: \Journey.createdDate, order: .forward) var journeys: [Journey]
+    @State private var showingNewThought = false
+    
+    var body: some View {
+        VStack {
+            Button("Novo Pensamento") {
+                showingNewThought = true
+            }
+        }
+        .sheet(isPresented: $showingNewThought) {
+            // Passar os journeys como parâmetro
+            NewThoughtView(journeys: journeys)
+        }
+    }
+}
+
+// Ou usando NavigationLink
+struct AnotherParentView: View {
+    @Query(sort: \Journey.createdDate, order: .forward) var journeys: [Journey]
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                NavigationLink("Criar Pensamento") {
+                    NewThoughtView(journeys: journeys)
+                }
+            }
+        }
+    }
+}
+
 #Preview {
-    NewThoughtView()
-        //.environmentObject(ThoughtViewModel())
+    NewThoughtView(journeys: [])
 }

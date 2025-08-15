@@ -12,31 +12,17 @@ import AppIntents
 @main
 struct MindNotesApp: App {
     
-    @State var linkActive = false
-    
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
+    
+    @Query(sort: \Journey.createdDate) private var journeys: [Journey]
+    
+    @State var linkActive = false
     @State private var showingWelcome = false
-
-//    init() {
-//        let appear = UINavigationBarAppearance()
-//
-//        let atters: [NSAttributedString.Key: Any] = [
-//            .font: UIFont(name: "Outfit-Regular", size: 36)!
-//        ]
-//
-//        appear.backgroundColor = UIColor(Color(hex: "#131313"))
-//
-//        appear.largeTitleTextAttributes = atters
-//        appear.titleTextAttributes = atters
-//        UINavigationBar.appearance().standardAppearance = appear
-//        UINavigationBar.appearance().compactAppearance = appear
-//        UINavigationBar.appearance().scrollEdgeAppearance = appear
-//     }
     
     var body: some Scene {
         WindowGroup {
            // NavigationStack {
-                ContentView()
+            ContentView(journeys: journeys)
                     .onOpenURL { url in
                         print("Received deep link: \(url)")
                         
@@ -49,7 +35,7 @@ struct MindNotesApp: App {
                         
                     }
                     .sheet(isPresented: $linkActive) {
-                        NewThoughtView()
+                        NewThoughtView(journeys: journeys)
                     }
             }
         .modelContainer(for: [Journey.self, Thought.self])
