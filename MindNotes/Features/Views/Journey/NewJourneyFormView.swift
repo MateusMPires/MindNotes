@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-struct CreateJourneyView: View {
-    @ObservedObject var journeyViewModel: JourneyViewModel
+// Preciso de: Função de Criar uma jornada..
+
+struct NewJourneyFormView: View {
     let journey: Journey?
     
-    // SwiftData...
-    @Environment(\.modelContext) private var context
-
+    @EnvironmentObject private var journeyService: JourneyService
     
+    // SwiftData...
     @Environment(\.dismiss) private var dismiss
+    
     @State private var name: String = ""
     @State private var selectedEmoji: String = "📝"
     @State private var selectedColor: Color = .blue
@@ -31,8 +32,7 @@ struct CreateJourneyView: View {
         journey != nil
     }
     
-    init(journeyViewModel: JourneyViewModel, journey: Journey? = nil) {
-        self.journeyViewModel = journeyViewModel
+    init(journey: Journey? = nil) {
         self.journey = journey
         
         if let journey = journey {
@@ -135,7 +135,8 @@ struct CreateJourneyView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Salvar" : "Criar") {
-                        saveJourney()
+                        
+                        journeyService.saveJourney(name, selectedEmoji, selectedColor, journey: journey)
                         dismiss()
                     }
                     .fontWeight(.semibold)
@@ -144,28 +145,7 @@ struct CreateJourneyView: View {
             }
         }
     }
-    
-    private func saveJourney() {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if let journey = journey {
-            // Edit existing journey
-            journey.name = trimmedName
-            journey.emoji = selectedEmoji
-            journey.colorHex = selectedColor.toHex()
-            journeyViewModel.updateJourney(journey)
-        } else {
-            // Create new journey
-            let newJourney = Journey(
-                name: trimmedName,
-                emoji: selectedEmoji,
-                colorHex: selectedColor.toHex()
-            )
-            
-            context.insert(newJourney)
-            
-        }
-    }
+
 }
 
 // MARK: - Color Extensions
@@ -208,5 +188,5 @@ extension Color {
 }
 
 #Preview {
-    CreateJourneyView(journeyViewModel: JourneyViewModel())
+    NewJourneyFormView()
 }
