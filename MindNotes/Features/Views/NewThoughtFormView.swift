@@ -43,16 +43,12 @@ struct NewThoughtFormView: View {
                   
                 VStack(spacing: 60) {
                     // Header com ícone que faz transição
-                    if showAnimation {
-                        headerWithTransition
-                            //.transition(.opacity.combined(with: .scale))
-                    }
+                    headerWithTransition
+                    //.transition(.opacity.combined(with: .scale))
                     
                     // Formulário principal
-                    if showAnimation {
-                        mainFormView
-                           // .transition(.opacity.combined(with: .move(edge: .bottom)))
-                    }
+                    mainFormView
+                    // .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
                 .padding()
             }

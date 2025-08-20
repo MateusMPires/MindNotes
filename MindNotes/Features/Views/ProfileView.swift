@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @EnvironmentObject private var dataManager: DataManager
     @State private var journeysCount: Int = 0
     @State private var thoughtsCount: Int = 0
     
@@ -37,16 +36,15 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Perfil")
-            .onAppear {
-                journeysCount = dataManager.fetchJourneys(includeArchived: true).count
-                thoughtsCount = dataManager.fetchThoughts().count
-            }
+//            .onAppear {
+//                journeysCount = dataManager.fetchJourneys(includeArchived: true).count
+//                thoughtsCount = dataManager.fetchThoughts().count
+//            }
         }
     }
 }
 
 #Preview {
     ProfileView()
-        .environmentObject(DataManager.shared)
 }
 

@@ -9,13 +9,15 @@
 import SwiftUI
 import SwiftData
 
+// Preciso de: Pensamento a ser editado...
+
 struct EditThoughtView: View {
    
     // SwiftData...
     @Environment(\.modelContext) private var context
-    @Query(sort: \Journey.createdDate, order: .forward) private var journeys: [Journey]
-
     
+    let journeys: [Journey]
+
     // NewThoughtView States...
     let thoughtToEdit: Thought
     
@@ -30,6 +32,7 @@ struct EditThoughtView: View {
     
     @FocusState private var isContentFocused: Bool
     
+    // Função Void OnEdit
 
     var body: some View {
         NavigationStack {
@@ -259,7 +262,7 @@ struct OtherEditView: View {
     }
 }
 
-#Preview {
-    NewThoughtView()
-        //.environmentObject(ThoughtViewModel())
-}
+//#Preview {
+//    NewThoughtView()
+//        //.environmentObject(ThoughtViewModel())
+//}

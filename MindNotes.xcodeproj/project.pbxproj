@@ -306,11 +306,11 @@
 				};
 			};
 			buildConfigurationList = D081A5872E2687FF002F43C7 /* Build configuration list for PBXProject "MindNotes" */;
-			developmentRegion = en;
+			developmentRegion = "pt-BR";
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				"pt-BR",
 			);
 			mainGroup = D081A5832E2687FF002F43C7;
 			minimizedProjectReferenceProxies = 1;

@@ -46,16 +46,51 @@ class Thought {
         self.journey = journey
     }
     
+    // MARK: - Essential Methods
+    
     func updateModifiedDate() {
         self.modifiedDate = Date()
     }
+    
+    func addTag(_ tag: String) {
+        let cleanTag = tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if !cleanTag.isEmpty && !tags.contains(cleanTag) {
+            tags.append(cleanTag)
+            updateModifiedDate()
+        }
+    }
+    
+    func removeTag(_ tag: String) {
+        tags.removeAll { $0 == tag }
+        updateModifiedDate()
+    }
+    
+    func toggleFavorite() {
+        isFavorite.toggle()
+        updateModifiedDate()
+    }
+    
+    func toggleCompleted() {
+        isCompleted.toggle()
+        updateModifiedDate()
+    }
+    
+    // MARK: - Computed Properties
+    
+    var hasActiveReminder: Bool {
+        guard shouldRemind, let reminderDate = reminderDate else { return false }
+        return reminderDate > Date()
+    }
+    
+    var isRecentlyModified: Bool {
+        Calendar.current.isDateInToday(modifiedDate)
+    }
 }
 
-// MARK: - Predefined Journeys
+// MARK: - Predefined Thoughts
 extension Thought {
     static let defaultThoughts = [
         Thought(content: "Hello, World!"),
         Thought(content: "Swift is awesome!")
     ]
 }
-

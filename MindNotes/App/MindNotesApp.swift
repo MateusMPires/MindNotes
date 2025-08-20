@@ -12,45 +12,53 @@ import AppIntents
 @main
 struct MindNotesApp: App {
     
+    // SwiftData Container...
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema(versionedSchema: SchemaV1.self)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
+    // Services...
+    var thoughtService: ThoughtService
+    var journeyService: JourneyService
+    
+    // Onboarding @AppStorage...
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
+
+    @Namespace private var thoughtNamespace
     
-    @Query(sort: \Journey.createdDate) private var journeys: [Journey]
-    
-    @State var linkActive = false
-    @State private var showingWelcome = false
+    init() {
+        let modelContext = sharedModelContainer.mainContext
+        
+        self.thoughtService = ThoughtService(context: modelContext)
+        self.journeyService = JourneyService(context: modelContext)
+    }
     
     var body: some Scene {
         WindowGroup {
-           // NavigationStack {
-            ContentView(journeys: journeys)
-                    .onOpenURL { url in
-                        print("Received deep link: \(url)")
-                        
-                        if url.host == "open-app" {
-                            
-                            linkActive = true
-                        } else {
-                            
-                        }
-                        
-                    }
-                    .sheet(isPresented: $linkActive) {
-                        NewThoughtView(journeys: journeys)
-                    }
-            }
+            ContentView()
+                .environmentObject(thoughtService)
+                .environmentObject(journeyService)
+        }
         .modelContainer(for: [Journey.self, Thought.self])
-
-//            .sheet(isPresented: $showingWelcome) {
-//                WelcomeView()
-//            }
-//            .onAppear {
-//                if !hasSeenWelcome {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                        showingWelcome = true
-//                        hasSeenWelcome = true
-//                    }
-//                }
-//            }
-//        }
+        
+        //            .sheet(isPresented: $showingWelcome) {
+        //                WelcomeView()
+        //            }
+        //            .onAppear {
+        //                if !hasSeenWelcome {
+        //                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        //                        showingWelcome = true
+        //                        hasSeenWelcome = true
+        //                    }
+        //                }
+        //            }
+        //        }
     }
 }

@@ -32,9 +32,10 @@ struct ThoughtRowView: View {
                     
                     Spacer()
                 }
-            }.onAppear {
-                print(thought.journey?.name ?? "não tem nome?")
             }
+//            .onAppear {
+//                print(thought.journey?.name ?? "não tem nome?")
+//            }
             
             Divider()
             

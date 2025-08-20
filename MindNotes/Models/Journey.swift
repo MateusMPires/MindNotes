@@ -17,9 +17,6 @@ class Journey {
     var colorHex: String
     var createdDate: Date
     var isArchived: Bool
-    var thoughtCount: Int {
-        thoughts?.count ?? 0
-    }
     
     @Relationship(deleteRule: .cascade, inverse: \Thought.journey)
     var thoughts: [Thought]?
@@ -33,6 +30,51 @@ class Journey {
         self.createdDate = Date()
         self.isArchived = false
         self.thoughts = []
+    }
+    
+    // MARK: - Essential Methods
+    
+    func addThought(_ thought: Thought) {
+        thought.journey = self
+        if thoughts == nil {
+            thoughts = []
+        }
+        thoughts?.append(thought)
+    }
+    
+    func removeThought(_ thought: Thought) {
+        thoughts?.removeAll { $0.id == thought.id }
+        thought.journey = nil
+    }
+    
+    func toggleArchived() {
+        isArchived.toggle()
+    }
+    
+    // MARK: - Computed Properties
+    
+    var thoughtCount: Int {
+        thoughts?.count ?? 0
+    }
+    
+    var activeThoughtCount: Int {
+        thoughts?.filter { !$0.isCompleted }.count ?? 0
+    }
+    
+    var favoriteThoughtCount: Int {
+        thoughts?.filter { $0.isFavorite }.count ?? 0
+    }
+    
+    var sortedThoughts: [Thought] {
+        thoughts?.sorted { $0.createdDate > $1.createdDate } ?? []
+    }
+    
+    var lastThought: Thought? {
+        thoughts?.max { $0.createdDate < $1.createdDate }
+    }
+    
+    var hasActiveReminders: Bool {
+        thoughts?.contains { $0.hasActiveReminder } ?? false
     }
 }
 

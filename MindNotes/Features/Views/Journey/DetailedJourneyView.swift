@@ -8,8 +8,18 @@
 import SwiftUI
 import SwiftData
 
+// Preciso de: Todos os pensamentos de uma jornada específica..
+// Fazer funções Void para editar, deletar e compartilhar.
+
+
 struct DetailedJourneyView: View {
     
+    // Closure que será passada pelo OtherView
+    var onArchive: (() -> Void)?
+    
+    var onDelete: (() -> Void)?
+    
+
     // SwiftData
      @Environment(\.modelContext) private var context
      @Query private var allThoughtsQuery: [Thought]
@@ -17,7 +27,6 @@ struct DetailedJourneyView: View {
      let allThoughts: Bool?
      let journey: Journey?
        
-     @State private var showingNewThought = false
      @State private var searchText = ""
      @State private var selectedThought: Thought?
      @State private var showingTagFilter = false
@@ -60,9 +69,6 @@ struct DetailedJourneyView: View {
              .searchable(text: $searchText, prompt: "Buscar pensamentos...")
              .toolbar {
                  toolbarContent
-             }
-             .sheet(isPresented: $showingNewThought) {
-                 NewThoughtView()
              }
              .sheet(isPresented: $showingTagFilter) {
                  TagFilterView()
@@ -155,7 +161,7 @@ struct DetailedJourneyView: View {
              }
              
              Button("Adicionar Pensamento") {
-                 showingNewThought = true
+                 //showingNewThought = true
              }
              .buttonStyle(.borderedProminent)
          }
@@ -231,7 +237,7 @@ struct DetailedJourneyView: View {
      private var addThoughtButton: some View {
          HStack {
              Button {
-                 showingNewThought = true
+                 //showingNewThought = true
              } label: {
                  HStack {
                      Image(systemName: "plus.circle.fill")
@@ -403,52 +409,54 @@ struct DetailedJourneyView: View {
 //}
 
 struct TagFilterRowView: View {
-    @EnvironmentObject private var thoughtViewModel: ThoughtViewModel
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Filtros Ativos")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(thoughtViewModel.selectedTags), id: \.self) { tag in
-                        HStack(spacing: 4) {
-                            Text("#\(tag)")
-                                .font(.caption)
-                            
-                            Button {
-                                thoughtViewModel.toggleTag(tag)
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .font(.caption2)
-                            }
-                        }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(Color.blue.opacity(0.2))
-                        .foregroundColor(.blue)
-                        .clipShape(Capsule())
-                    }
-                    
-                    Button {
-                        thoughtViewModel.clearTagFilters()
-                    } label: {
-                        Text("Limpar Tudo")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .overlay(
-                                Capsule()
-                                    .stroke(Color.red.opacity(0.3), lineWidth: 1)
-                            )
-                    }
-                }
-                .padding(.horizontal, 1)
-            }
+        VStack {
+             Text("d")
         }
+//        VStack(alignment: .leading, spacing: 8) {
+//            Text("Filtros Ativos")
+//                .font(.caption)
+//                .foregroundColor(.secondary)
+//            
+//            ScrollView(.horizontal, showsIndicators: false) {
+//                HStack(spacing: 8) {
+//                    ForEach(Array(thoughtViewModel.selectedTags), id: \.self) { tag in
+//                        HStack(spacing: 4) {
+//                            Text("#\(tag)")
+//                                .font(.caption)
+//                            
+//                            Button {
+//                                thoughtViewModel.toggleTag(tag)
+//                            } label: {
+//                                Image(systemName: "xmark")
+//                                    .font(.caption2)
+//                            }
+//                        }
+//                        .padding(.horizontal, 10)
+//                        .padding(.vertical, 6)
+//                        .background(Color.blue.opacity(0.2))
+//                        .foregroundColor(.blue)
+//                        .clipShape(Capsule())
+//                    }
+//                    
+//                    Button {
+//                        thoughtViewModel.clearTagFilters()
+//                    } label: {
+//                        Text("Limpar Tudo")
+//                            .font(.caption)
+//                            .foregroundColor(.red)
+//                            .padding(.horizontal, 10)
+//                            .padding(.vertical, 6)
+//                            .overlay(
+//                                Capsule()
+//                                    .stroke(Color.red.opacity(0.3), lineWidth: 1)
+//                            )
+//                    }
+//                }
+//                .padding(.horizontal, 1)
+//            }
+//        }
     }
 }
 
