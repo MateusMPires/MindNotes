@@ -11,8 +11,11 @@ struct ContentView: View {
     
     @State private var selectedThought: Thought?
 
+    @State private var animateGradient: Bool = false
+    @State private var isBubbling: Bool = false
+    
     // Namespace para transição
-    @Namespace private var thoughtNamespace
+    @Namespace private var transitionNamespace
     
     // SwiftData...
     @Query(sort: \Thought.createdDate, order: .reverse) private var thoughts: [Thought]
@@ -31,20 +34,26 @@ struct ContentView: View {
             ZStack {
                 // App Background...
                 AppBackground()
-                
-                VStack(alignment: .center, spacing: 180) {
-                    headerView
-                    
-                    addThoughtButton
-                    
-                    recentsSection
+
+                ScrollView {
+                   VStack(alignment: .center, spacing: 220) {
+                        headerView
+                       
+                        addThoughtButton
+                            .matchedTransitionSource(id: addNewThought, in: transitionNamespace)
+                        
+                        recentsSection
+                    }
+                   .background(.red)
                 }
+                .background(.yellow)
             }
             .navigationDestination(item: $selectedThought) { thought in
                 DetailedThoughtView(thought: thought)
             }
-            .sheet(isPresented: $addNewThought) {
-                NewThoughtFormView(namespace: thoughtNamespace)
+            .navigationDestination(isPresented: $addNewThought) {
+                NewThoughtFormView(namespace: transitionNamespace)
+                    .navigationTransition(.zoom(sourceID: addNewThought, in: transitionNamespace))
             }
             .sheet(isPresented: $showJourneys) {
                 GalleryJourneyView(showJourneyView: $showJourneys)
@@ -82,7 +91,7 @@ struct ContentView: View {
                 }
                 
                 Spacer()
-                
+//                
                 Button {
                     withAnimation(.easeInOut) { showJourneys = true }
                 } label: {
@@ -91,28 +100,57 @@ struct ContentView: View {
                         .symbolRenderingMode(.hierarchical)
                 }
                 .padding(.bottom)
+                .hidden()
             }
+            .padding(.vertical, 36)
+
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 12)
+        .background(.green)
+        //.padding(.horizontal, 24)
     }
     
     private var addThoughtButton: some View {
-        VStack(spacing: 8) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.6)) {
-                    addNewThought = true
-                }
-            } label: {
-                Image(systemName: "lightbulb.circle.fill")
-                    //.resizable()
-                    //.aspectRatio(contentMode: .fit)
-                    //.clipShape(Circle())
-                    .font(.system(size: 40))
-                    .foregroundStyle(.primary)
-                    .padding(20)
-                    .bold()
+        Button {
+//            withAnimation(.spring(response: 0.8, dampingFraction: 0.6)) {
+//                addNewThought = true
+//            }
+            
+            withAnimation(.smooth) {
+                addNewThought = true
             }
+                
+            
+        } label: {
+            ZStack {
+                // Fundo circular com gradiente animado
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.blue.opacity(0.4), Color.blue],
+                            startPoint: animateGradient ? .topLeading : .bottomTrailing,
+                            endPoint: animateGradient ? .bottomTrailing : .topLeading
+                        )
+                    )
+                    .frame(width: 70, height: 70)
+//                    .scaleEffect(isBubbling ? 1.1 : 1.0) // efeito de bolha
+                    .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
+
+                // Ícone no centro
+                Image(systemName: "plus")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.white)
+            }
+        }
+        .background(.mint)
+        .onAppear {
+            // Inicia a animação infinita do gradiente
+            withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) {
+                animateGradient.toggle()
+            }
+            // Inicia a animação infinita da bolha
+//            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+//                isBubbling.toggle()
+//            }
         }
     }
     
@@ -137,7 +175,9 @@ struct ContentView: View {
                                 .animation(.spring(duration: 0.4), value: thoughts.first?.id)
             }
         }
+        .background(.blue)
     }
+        
     
     @ViewBuilder
     func LastThoughtView(_ thought: Thought) -> some View {

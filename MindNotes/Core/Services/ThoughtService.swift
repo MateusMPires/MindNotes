@@ -24,6 +24,7 @@ class ThoughtService: ObservableObject {
         
         guard !trimmedContent.isEmpty else {
             //throw ThoughtError.emptyContent
+            return 
         }
         
         let newThought = Thought(
@@ -117,7 +118,10 @@ class ThoughtService: ObservableObject {
     }
     
     func fetchThoughts(for journey: Journey) throws -> [Thought] {
-        let predicate = #Predicate<Thought> { $0.journey?.id == journey.id }
+        let journeyID = journey.id
+        let predicate = #Predicate<Thought> { thought in
+            thought.journey != nil && thought.journey!.id == journeyID
+        }
         let sortDescriptor = SortDescriptor(\Thought.modifiedDate, order: .reverse)
         return try fetch(predicate: predicate, sortBy: [sortDescriptor])
     }

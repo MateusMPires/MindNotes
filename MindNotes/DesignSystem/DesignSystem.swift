@@ -10,7 +10,10 @@ import SwiftUI
 // 1. Design Tokens
 struct DesignTokens {
     struct Colors {
-        static let background = Color(hex: "#111010")
+//        static let background = Color(hex: "#EDE3E3")
+        static let background = LinearGradient(colors: [Color(hex: "#112F3A"), Color(hex: "#153641"), Color(hex: "#224A58"), Color(hex: "#2F5E6F")], startPoint: .top, endPoint: .bottom)
+           
+
         static let cardBackground = Color.white.opacity(0.05)
         static let strokeColor = Color.white.opacity(0.3)
         static let primaryText = Color.primary

@@ -180,7 +180,11 @@ struct NewThoughtFormView: View {
     
     private func saveThought() {
         
-        thoughtService.saveThought(draft, notes)
+        do {
+            try thoughtService.saveThought(draft, notes: notes)
+        } catch {
+            
+        }
         
         withAnimation(.spring(duration: 0.1)) {
             showAnimation = false

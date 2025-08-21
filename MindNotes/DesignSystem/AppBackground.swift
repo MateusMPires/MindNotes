@@ -10,6 +10,7 @@ import SwiftUI
 struct AppBackground: View {
     var body: some View {
         DesignTokens.Colors.background
+            .opacity(0.1)
             .ignoresSafeArea()
     }
 }
