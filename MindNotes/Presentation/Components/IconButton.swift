@@ -18,7 +18,7 @@ struct IconButton: View {
             Image(systemName: iconName)
                 .font(.system(size: size))
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(DesignTokens.Colors.primaryText)
+                .foregroundStyle(.accent)
         }
         .opacity(isHidden ? 0 : 1)
     }

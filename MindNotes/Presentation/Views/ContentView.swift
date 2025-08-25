@@ -34,9 +34,9 @@ struct ContentView: View {
             ZStack {
                 // App Background...
                 AppBackground()
-
+                
                 ScrollView {
-                   VStack(alignment: .center, spacing: 220) {
+                   VStack(alignment: .center, spacing: 200) {
                         headerView
                        
                         addThoughtButton
@@ -44,9 +44,9 @@ struct ContentView: View {
                         
                         recentsSection
                     }
-                   .background(.red)
+                   //.background(.red)
                 }
-                .background(.yellow)
+               // .background(.yellow)
             }
             .navigationDestination(item: $selectedThought) { thought in
                 DetailedThoughtView(thought: thought)
@@ -55,14 +55,14 @@ struct ContentView: View {
                 NewThoughtFormView(namespace: transitionNamespace)
                     .navigationTransition(.zoom(sourceID: addNewThought, in: transitionNamespace))
             }
-            .sheet(isPresented: $showJourneys) {
+            .fullScreenCover(isPresented: $showJourneys) {
                 GalleryJourneyView(showJourneyView: $showJourneys)
             }
             .onOpenURL { url in
                 addNewThought = true
             }
         }
-        .tint(.primary)
+        //.tint(.primary)
     }
     
     // MARK: - Subviews as variables
@@ -85,13 +85,14 @@ struct ContentView: View {
                 VStack {
                     Text("mind notes")
                         .font(DesignTokens.Typography.title)
+                        .foregroundStyle(DesignTokens.Colors.primaryText)
                     Text("de mateus")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                        .font(DesignTokens.Typography.caption)
+                        .foregroundStyle(DesignTokens.Colors.secondaryText)
                 }
                 
                 Spacer()
-//                
+
                 Button {
                     withAnimation(.easeInOut) { showJourneys = true }
                 } label: {
@@ -105,77 +106,68 @@ struct ContentView: View {
             .padding(.vertical, 36)
 
         }
-        .background(.green)
+        //.background(.green)
         //.padding(.horizontal, 24)
     }
     
     private var addThoughtButton: some View {
         Button {
-//            withAnimation(.spring(response: 0.8, dampingFraction: 0.6)) {
-//                addNewThought = true
-//            }
-            
-            withAnimation(.smooth) {
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.6)) {
                 addNewThought = true
             }
-                
-            
         } label: {
             ZStack {
-                // Fundo circular com gradiente animado
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.blue.opacity(0.4), Color.blue],
-                            startPoint: animateGradient ? .topLeading : .bottomTrailing,
-                            endPoint: animateGradient ? .bottomTrailing : .topLeading
-                        )
-                    )
-                    .frame(width: 70, height: 70)
-//                    .scaleEffect(isBubbling ? 1.1 : 1.0) // efeito de bolha
-                    .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
-
+                Image("mainButton")
+                    .resizable()
+                    .frame(width: 120, height: 120)
                 // Ícone no centro
                 Image(systemName: "plus")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.white)
             }
-        }
-        .background(.mint)
-        .onAppear {
-            // Inicia a animação infinita do gradiente
-            withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) {
-                animateGradient.toggle()
-            }
-            // Inicia a animação infinita da bolha
-//            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-//                isBubbling.toggle()
-//            }
         }
     }
     
     private var recentsSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("Recente")
+        VStack(alignment: .center, spacing: 24) {
+            Text("Hoje")
                 .font(DesignTokens.Typography.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 24)
+                .foregroundStyle(DesignTokens.Colors.secondaryText)
+                //.padding(.horizontal, 24)
             
-            Button {
-                selectedThought = thoughts.first
-            } label: {
-                LastThoughtView(thoughts.first ?? Thought(content: "Sem nenhum pensamento por enquanto..."))
-                    .padding(.horizontal)
-                    .id(thoughts.first?.id) // 🔹 Força o SwiftUI a tratar como nova view
-                                .transition(.asymmetric(
-                                    insertion: .move(edge: .trailing).combined(with: .opacity),
-                                    removal: .move(edge: .leading).combined(with: .opacity)
-                                ))
-                                .padding()
-                                .animation(.spring(duration: 0.4), value: thoughts.first?.id)
+            // TODO: - Arrumar essa navegacão de botão e o ForEach
+            ForEach(0..<5) { thought in
+                Button {
+                    selectedThought = thoughts.first
+                } label: {
+                    ThoughtRowView(thought: thoughts.first ?? Thought(content: "Sem nenhum pensamento por enquanto..."))
+                        //.padding(.horizontal)
+                        .id(thoughts.first?.id) // 🔹 Força o SwiftUI a tratar como nova view
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                                        removal: .move(edge: .leading).combined(with: .opacity)
+                                    ))
+                                    //.padding()
+                                    .animation(.spring(duration: 0.4), value: thoughts.first?.id)
+                }
             }
+       
+            // Chapters Button...
+            Button {
+                // Go to Chapters...
+                showJourneys.toggle()
+            } label: {
+                Image(systemName: "book.pages.fill")
+                    .foregroundStyle(.white)
+                    .padding(10)
+                    .background(.accent)
+                    .clipShape(Circle())
+            }
+            .padding(.vertical, 16)
+
         }
-        .background(.blue)
+        .padding()
+        //.background(.blue)
     }
         
     

@@ -5,11 +5,9 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>Outfit-Regular.ttf</string>
-		<string>BeVietnamPro-Regular.ttf</string>
-		<string>Outfit-Bold.ttf</string>
-		<string>Outfit-Light.ttf</string>
-		<string>InstrumentSans-Regular.ttf</string>
+		<string>Outfit-Medium.ttf</string>
 		<string>Manrope-Regular.ttf</string>
+		<string>Manrope-Medium.ttf</string>
 	</array>
 </dict>
 </plist>

@@ -283,7 +283,7 @@ struct GalleryJourneyView: View {
                                     Image(systemName: "plus.circle.fill")
                                     Text("Adicionar jornada")
                                 }
-                                .fontWeight(.medium)
+                                .fontWeight(.semibold)
                             }
                             
                             Spacer()

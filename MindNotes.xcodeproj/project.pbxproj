@@ -70,11 +70,9 @@
 		D071DE192E4C10C500265FA4 /* Exceptions for "MindNotes" folder in "MindNotesWidget-ExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"Utilities/Fonts/BeVietnamPro-Regular.ttf",
-				"Utilities/Fonts/InstrumentSans-Regular.ttf",
+				"Utilities/Fonts/Manrope-Medium.ttf",
 				"Utilities/Fonts/Manrope-Regular.ttf",
-				"Utilities/Fonts/Outfit-Bold.ttf",
-				"Utilities/Fonts/Outfit-Light.ttf",
+				"Utilities/Fonts/Outfit-Medium.ttf",
 				"Utilities/Fonts/Outfit-Regular.ttf",
 			);
 			target = D071DD762E48229E00265FA4 /* MindNotesWidget-ExtensionExtension */;
