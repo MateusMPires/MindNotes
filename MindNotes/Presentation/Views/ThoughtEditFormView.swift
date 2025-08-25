@@ -11,7 +11,7 @@ import SwiftData
 
 // Preciso de: Pensamento a ser editado...
 
-struct EditThoughtView: View {
+struct ThoughtEditFormView: View {
    
     // SwiftData...
     @Environment(\.modelContext) private var context

@@ -12,7 +12,7 @@ import SwiftData
 // Fazer funções Void para editar, deletar e compartilhar.
 
 
-struct DetailedJourneyView: View {
+struct ChapterDetailedView: View {
     
     // Closure que será passada pelo OtherView
     var onArchive: (() -> Void)?
@@ -385,6 +385,6 @@ struct TagFilterRowView: View {
 }
 
 #Preview {
-    DetailedJourneyView(allThoughts: true, journey: Journey(name: "Criativo"))
+    ChapterDetailedView(allThoughts: true, journey: Journey(name: "Criativo"))
         .modelContainer(for: [Journey.self, Thought.self], inMemory: true)
 }

@@ -11,7 +11,7 @@ import SwiftData
 // Preciso de: Jornadas disponíveis para o novo pensamento...
 
 
-struct NewThoughtFormView: View {
+struct ThoughtFormView: View {
    
     @Environment(\.dismiss) private var dismiss
     
@@ -355,5 +355,5 @@ struct OtherView: View {
 
 #Preview {
     @Previewable @Namespace var namespace
-    NewThoughtFormView(namespace: namespace)
+    ThoughtFormView(namespace: namespace)
 }

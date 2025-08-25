@@ -101,7 +101,7 @@ struct JourneySection: View {
 
 // MARK: - Main View Refatorada
 
-struct GalleryJourneyView: View {
+struct ChaptersGalleryView: View {
     
     // Navigation...
     @State private var selectedJourney: Journey?
@@ -225,7 +225,7 @@ struct GalleryJourneyView: View {
                 .navigationDestination(item: $selectedJourney) { _ in 
                     DetailedJourneyView(allThoughts: false, journey: selectedJourney)
                 }
-                .navigationDestination(isPresented: $openAllThoughts) { 
+                .navigationDestination(isPresented: $openAllThoughts) {
                     DetailedJourneyView(allThoughts: true, journey: nil)
                 }
             }
@@ -410,7 +410,7 @@ struct JourneyRow: View {
         }
     }()
     
-    GalleryJourneyView(showJourneyView: .constant(true))
+    ChaptersGalleryView(showJourneyView: .constant(true))
         .modelContainer(for: Journey.self, inMemory: true)
         .environmentObject(JourneyService(context: sharedModelContainer.mainContext))
 }

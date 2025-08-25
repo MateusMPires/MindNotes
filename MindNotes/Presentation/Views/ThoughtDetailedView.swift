@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-struct DetailedThoughtView: View {
+struct ThoughtDetailedView: View {
     
     @Environment(\.modelContext) private var context
     
@@ -325,5 +325,5 @@ struct FlowLayout: Layout {
         reminderDate: Date()
     )
     
-    DetailedThoughtView(thought: sampleThought)
+    ThoughtDetailedView(thought: sampleThought)
 }

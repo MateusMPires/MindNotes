@@ -9,7 +9,7 @@ import SwiftUI
 
 // Preciso de: Função de Criar uma jornada..
 
-struct NewJourneyFormView: View {
+struct ChapterFormView: View {
     let journey: Journey?
     
     @EnvironmentObject private var journeyService: JourneyService
@@ -188,5 +188,5 @@ extension Color {
 }
 
 #Preview {
-    NewJourneyFormView()
+    ChapterFormView()
 }
