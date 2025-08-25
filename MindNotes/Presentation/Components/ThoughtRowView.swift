@@ -32,8 +32,8 @@ struct ThoughtRowView: View {
                     
                     // Content + Tags...
                     VStack(alignment: .leading, spacing: 12) {
-                        //Text(thought.content)
-                        Text("Uma frase bem legal. E mais uma frase bem legal.")
+                        Text(thought.content)
+                        //Text("Uma frase bem legal. E mais uma frase bem legal.")
                             .font(DesignTokens.Typography.body)
                             .foregroundStyle(DesignTokens.Colors.primaryText)
                             .multilineTextAlignment(.leading)

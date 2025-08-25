@@ -140,7 +140,7 @@ struct ContentView: View {
                 Button {
                     selectedThought = thoughts.first
                 } label: {
-                    ThoughtRowView(thought: thoughts.first ?? Thought(content: "Sem nenhum pensamento por enquanto..."))
+                    ThoughtRowView(thought: thoughts[thought])
                         //.padding(.horizontal)
                         .id(thoughts.first?.id) // 🔹 Força o SwiftUI a tratar como nova view
                                     .transition(.asymmetric(
