@@ -33,73 +33,78 @@ struct EditThoughtView: View {
     @FocusState private var isContentFocused: Bool
     
     // Função Void OnEdit
-
+    
     var body: some View {
         NavigationStack {
-            Form {
-                // Content Section
-                Section {
-                    TextField("O que você está pensando?", text: $draft.content , axis: .vertical)
-                        .lineLimit(3...8)
-                        .font(.body)
-                        .focused($isContentFocused)
+            ZStack {
+                
+                AppBackground()
+                
+                Form {
+                    // Content Section
+                    Section {
+                        TextField("O que você está pensando?", text: $draft.content , axis: .vertical)
+                            .lineLimit(3...8)
+                            .font(.body)
+                            .focused($isContentFocused)
+                        
+                        TextField("Notas adicionais...", text: $notes, axis: .vertical)
+                            .lineLimit(2...6)
+                            .font(.callout)
+                            .foregroundColor(.secondary)
+                    } footer: {
+                        Text("Compartilhe suas reflexões, ideias e momentos de insight.")
+                    }
                     
-                    TextField("Notas adicionais...", text: $notes, axis: .vertical)
-                        .lineLimit(2...6)
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                } footer: {
-                    Text("Compartilhe suas reflexões, ideias e momentos de insight.")
-                }
-                
-                //Details Section...
-                Section {
-                    NavigationLink {
-                        OtherEditView(draft: $draft) {
-                            editThought()
-                        }
-                    }
-                    label: {
-                        Text("Detalhes")
-                    }
-                }
-                
-                
-                // Journey Section...
-                Section {
-                    Picker(selection: $draft.journey ) {
-                        if journeys.isEmpty {
-                            ContentUnavailableView("Sem jornadas por enquanto...", image: "")
-                        } else {
-                            Text("Nenhuma jornada")
-                                   .tag(nil as Journey?)
-                            
-                            ForEach(journeys, id: \.self) { journey in
-                                Text(journey.name)
-                                    .tag(journey)
+                    //Details Section...
+                    Section {
+                        NavigationLink {
+                            OtherEditView(draft: $draft) {
+                                editThought()
                             }
                         }
-                    } label: {
-                        Text("Jornada")
+                        label: {
+                            Text("Detalhes")
+                        }
                     }
-                    .pickerStyle(.navigationLink)
+                    
+                    
+                    // Journey Section...
+                    Section {
+                        Picker(selection: $draft.journey ) {
+                            if journeys.isEmpty {
+                                ContentUnavailableView("Sem jornadas por enquanto...", image: "")
+                            } else {
+                                Text("Nenhuma jornada")
+                                    .tag(nil as Journey?)
+                                
+                                ForEach(journeys, id: \.self) { journey in
+                                    Text(journey.name)
+                                        .tag(journey)
+                                }
+                            }
+                        } label: {
+                            Text("Jornada")
+                        }
+                        .pickerStyle(.navigationLink)
+                    }
                 }
-            }
-            .navigationTitle("Editar Pensamento")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancelar") {
-                        dismiss()
+                .navigationTitle("Editar Pensamento")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancelar") {
+                            dismiss()
+                        }
                     }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Salvar") {
-                        editThought()
+                    
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Salvar") {
+                            editThought()
+                        }
+                        .fontWeight(.bold)
+                        .disabled(draft.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
-                    .fontWeight(.bold)
-                    .disabled(draft.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }
@@ -131,7 +136,7 @@ struct EditThoughtView: View {
         thoughtToEdit.createdDate = draft.createdDate
         thoughtToEdit.isFavorite = draft.isFavorite
         thoughtToEdit.journey = draft.journey
-    
+        
         
         
         do {
@@ -148,7 +153,7 @@ struct OtherEditView: View {
     @Binding var draft: ThoughtDraft
     
     @State private var newTag: String = ""
-
+    
     
     // Closure que será passada pelo OtherView
     var onSave: (() -> Void)?
@@ -206,7 +211,7 @@ struct OtherEditView: View {
                 Section("Data e Hora") {
                     DatePicker("", selection: $draft.createdDate, in: ...Date(), displayedComponents: [.date])
                         .datePickerStyle(.graphical)
-                        
+                    
                 }
                 
                 // Reminder Section

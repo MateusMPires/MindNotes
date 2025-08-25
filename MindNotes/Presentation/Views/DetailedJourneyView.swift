@@ -54,6 +54,10 @@ struct DetailedJourneyView: View {
      
      var body: some View {
 //         NavigationStack {
+         ZStack {
+             
+             AppBackground()
+             
              Group {
                  if isEmpty && searchText.isEmpty {
                      emptyStateView
@@ -73,8 +77,7 @@ struct DetailedJourneyView: View {
              .sheet(isPresented: $showingTagFilter) {
                  TagFilterView()
              }
-             .background(Color(hex: "#131313").ignoresSafeArea())
-//         }
+         }
      }
      
      // MARK: - Content Views
@@ -323,90 +326,6 @@ struct DetailedJourneyView: View {
      }
  }
 
-
-//struct ThoughtRowView: View {
-//    let thought: Thought
-//    
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 8) {
-//            HStack(alignment: .top) {
-//                VStack(alignment: .leading, spacing: 12) {
-//                    Text(thought.content)
-//                          //.font(.custom("InstrumentSans-Regular", size: 16))
-//                          .font(.custom("Manrope-Regular", size: 16))
-//                    
-//                    if let notes = thought.notes, !notes.isEmpty {
-//                        Image(systemName: "line.3.horizontal")
-//                            .font(.callout)
-//                            .foregroundColor(.secondary)
-//                    }
-//                }
-//                .padding(.horizontal, 4)
-//                
-//                Spacer()
-//            }
-//            
-//            Divider()
-//            
-//            HStack {
-//                if !thought.tags.isEmpty {
-//                        HStack(spacing: 6) {
-//                            ForEach(thought.tags, id: \.self) { tag in
-//                                Text("#\(tag)")
-//                                    .font(.custom("Manrope-Regular", size: 10))
-//                                    .textCase(.lowercase)
-//                                    .padding(.leading, 8)
-//                                    .padding(.vertical, 3)
-//                                    .foregroundColor(.primary)
-//                            }
-//                            
-//                            Text("em luto")
-//                                .font(.custom("Manrope-Regular", size: 10))
-//                                .italic()
-//
-//                            Spacer()
-//                            
-//                            VStack(alignment: .trailing, spacing: 4) {
-//                                if thought.isFavorite {
-//                                    Image(systemName: "star.fill")
-//                                        .foregroundColor(.yellow)
-//                                        .font(.caption)
-//                                }
-//                                
-//                                if thought.shouldRemind {
-//                                    Image(systemName: "bell.fill")
-//                                        .foregroundColor(.orange)
-//                                        .font(.caption2)
-//                                }
-//                            }
-//                        }
-//                        .padding(.horizontal, 1)
-//                        .foregroundColor(.secondary)
-//                }
-//            }
-//        }
-//        .padding()
-//        .background {
-//            TransparentBlurView(removeAllFilters: true)
-//                .blur(radius: 9, opaque: true)
-//                .background(.white.opacity(0.05))
-//        }
-//        .clipShape(.rect(cornerRadius: 12, style: .continuous))
-//        .background {
-//            RoundedRectangle(cornerRadius: 12, style: .continuous)
-//                .stroke(.white.opacity(0.3), lineWidth: 1)
-//        }
-//    }
-//    
-//    private func formatDate(_ date: Date) -> String {
-//        let formatter = DateFormatter()
-//        formatter.locale = Locale(identifier: "pt_BR")
-//        formatter.dateFormat = "EEEE, d 'de' MMM"
-//        return formatter.string(from: date)
-//            .capitalized  // Para garantir que a primeira letra seja maiúscula
-//    }
-//
-//}
 
 struct TagFilterRowView: View {
     

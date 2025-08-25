@@ -5,15 +5,17 @@ import SwiftUI
 struct DetailedThoughtView: View {
     
     @Environment(\.modelContext) private var context
-
+    
     let thought: Thought
     @Environment(\.dismiss) private var dismiss
     @State private var showingEditSheet = false
     @State private var showingDeleteAlert = false
     
     var body: some View {
-        //Ele cria a de todo mundo...
-//        NavigationStack {
+        ZStack {
+            
+            AppBackground()
+            
             ScrollView {
                 VStack(spacing: 32) {
                     // Main thought card
@@ -31,56 +33,20 @@ struct DetailedThoughtView: View {
                 }
                 .padding(24)
             }
-            .background(Color(hex: "#131313").ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    Button("Voltar") {
-//                        dismiss()
-//                    }
-//                    .foregroundColor(.primary)
-//                }
-//                
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    Menu {
-//                        Button {
-//                            shareThought()
-//                        } label: {
-//                            Label("Compartilhar", systemImage: "square.and.arrow.up")
-//                        }
-//                        
-//                        Button {
-//                            showingEditSheet = true
-//                        } label: {
-//                            Label("Editar", systemImage: "pencil")
-//                        }
-//                        
-//                        Divider()
-//                        
-//                        Button(role: .destructive) {
-//                            showingDeleteAlert = true
-//                        } label: {
-//                            Label("Excluir", systemImage: "trash")
-//                        }
-//                    } label: {
-//                        Image(systemName: "ellipsis.circle")
-//                            .foregroundColor(.primary)
-//                    }
-//                }
-//            }
-//        }
-        .sheet(isPresented: $showingEditSheet) {
-            EditThoughtView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, journey: thought.journey))
-        }
-        .alert("Excluir Pensamento", isPresented: $showingDeleteAlert) {
-            Button("Cancelar", role: .cancel) { }
-            Button("Excluir", role: .destructive) {
-                // Delete thought logic here
-                context.delete(thought)
-                dismiss()
+            .sheet(isPresented: $showingEditSheet) {
+                EditThoughtView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, journey: thought.journey))
             }
-        } message: {
-            Text("Esta ação não pode ser desfeita.")
+            .alert("Excluir Pensamento", isPresented: $showingDeleteAlert) {
+                Button("Cancelar", role: .cancel) { }
+                Button("Excluir", role: .destructive) {
+                    // Delete thought logic here
+                    context.delete(thought)
+                    dismiss()
+                }
+            } message: {
+                Text("Esta ação não pode ser desfeita.")
+            }
         }
     }
     
@@ -204,7 +170,7 @@ struct DetailedThoughtView: View {
                 .stroke(.blue.opacity(0.3), lineWidth: 1)
         }
     }
-
+    
     // MARK: - Action Buttons
     private var actionButtons: some View {
         HStack(spacing: 16) {
@@ -245,7 +211,7 @@ struct DetailedThoughtView: View {
                 Circle()
                     .stroke(.white.opacity(0.3), lineWidth: 1)
             }
-
+            
             // Delete Button...
             Button(action: {
                 showingDeleteAlert.toggle()
