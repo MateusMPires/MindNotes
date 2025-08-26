@@ -66,7 +66,7 @@ struct ChapterDetailedView: View {
                  }
              }
              .navigationDestination(item: $selectedThought) { thought in
-                 DetailedThoughtView(thought: thought)
+                 ThoughtDetailedView(thought: thought)
              }
              .navigationTitle(navigationTitle)
              .navigationBarTitleDisplayMode(.inline)

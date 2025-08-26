@@ -35,7 +35,7 @@ struct ThoughtDetailedView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingEditSheet) {
-                EditThoughtView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, journey: thought.journey))
+                ThoughtEditFormView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, journey: thought.journey))
             }
             .alert("Excluir Pensamento", isPresented: $showingDeleteAlert) {
                 Button("Cancelar", role: .cancel) { }

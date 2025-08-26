@@ -35,7 +35,7 @@ struct ThoughtRowView: View {
                         Text(thought.content)
                         //Text("Uma frase bem legal. E mais uma frase bem legal.")
                             .font(DesignTokens.Typography.body)
-                            .foregroundStyle(DesignTokens.Colors.primaryText)
+                            .foregroundStyle(DesignTokens.Colors.primary)
                             .multilineTextAlignment(.leading)
                         
                         // Tag...

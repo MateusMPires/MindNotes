@@ -16,7 +16,7 @@ struct DesignTokens {
 
         static let cardBackground = Color.white.opacity(0.05)
         static let strokeColor = Color.white.opacity(0.3)
-        static let primaryText = Color(hex: "#061A21")
+        static let primary = Color(hex: "#061A21")
         static let secondaryText = Color(hex: "#404040")
         static let tag = Color(hex: "#112F3A").opacity(0.5)
         static let accent = Color.yellow
@@ -25,7 +25,7 @@ struct DesignTokens {
     
     struct Typography {
         static let title = Font.custom("Outfit-Medium", size: 24)
-        static let subtitle = Font.callout
+        static let subtitle = Font.custom("Outfit-Regular", size: 16)
         static let body = Font.custom("Manrope-Medium", size: 16)
         static let caption = Font.custom("Manrope-Regular", size: 12)
         static let tag = Font.custom("Manrope-Regular", size: 10)

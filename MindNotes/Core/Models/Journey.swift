@@ -21,7 +21,7 @@ class Journey {
     @Relationship(deleteRule: .cascade, inverse: \Thought.journey)
     var thoughts: [Thought]?
     
-    init(name: String, emoji: String = "📝", colorHex: String = "#007AFF") {
+    init(name: String, emoji: String = "folder.fill", colorHex: String = "#007AFF") {
         self.id = UUID()
         self.name = name
         self.notes = nil

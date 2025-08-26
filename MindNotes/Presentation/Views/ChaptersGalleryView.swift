@@ -4,102 +4,6 @@ import SwiftUI
 import SwiftData
 
 
-// MARK: - Special Sections
-
-struct AllThoughtsRow: View {
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Image(systemName: "tray.full.fill")
-                    .foregroundColor(DesignTokens.Colors.primaryText)
-                    .font(.title3)
-                    .frame(width: 32, height: 32)
-                    .background(DesignTokens.Colors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
-                
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                    Text("minha mente")
-                        .font(DesignTokens.Typography.body)
-                        .fontWeight(.medium)
-                    Text("todos os pensamentos")
-                        .font(DesignTokens.Typography.caption)
-                        .foregroundColor(DesignTokens.Colors.secondaryText)
-                }
-                
-                Spacer()
-            }
-        }
-    }
-}
-
-struct EmptyJourneysView: View {
-    let onCreateJourney: () -> Void
-    
-    var body: some View {
-        VStack(spacing: DesignTokens.Spacing.lg) {
-            Image(systemName: "folder.badge.plus")
-                .font(.largeTitle)
-                .foregroundColor(DesignTokens.Colors.secondaryText)
-            
-            Text("Nenhuma jornada criada")
-                .font(DesignTokens.Typography.subtitle)
-                .foregroundColor(DesignTokens.Colors.secondaryText)
-            
-            Text("Crie sua primeira jornada para organizar seus pensamentos")
-                .font(DesignTokens.Typography.caption)
-                .foregroundColor(DesignTokens.Colors.secondaryText)
-                .multilineTextAlignment(.center)
-            
-            Button(action: onCreateJourney) {
-                Text("Criar Jornada")
-                    .fontWeight(.medium)
-                    .padding(.horizontal, DesignTokens.Spacing.xl)
-                    .padding(.vertical, DesignTokens.Spacing.sm)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .clipShape(Capsule())
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 400)
-        .padding(.vertical, 100)
-    }
-}
-
-// MARK: - Section Components
-
-struct JourneySection: View {
-    let title: String
-    let journeys: [Journey]
-    let onJourneyTap: (Journey) -> Void
-    let onJourneyEdit: (Journey) -> Void
-    let onJourneyArchive: (Journey) -> Void
-    let onJourneyDelete: (Journey) -> Void
-    let onJourneyUnarchive: ((Journey) -> Void)?
-    
-    var body: some View {
-        if !journeys.isEmpty {
-            Section(title) {
-                ForEach(journeys) { journey in
-                    JourneyRow(
-                        journey: journey,
-                        onTap: { onJourneyTap(journey) },
-                        onEdit: { onJourneyEdit(journey) },
-                        onArchive: { onJourneyArchive(journey) },
-                        onDelete: { onJourneyDelete(journey) },
-                        onUnarchive: onJourneyUnarchive.map { unarchive in { unarchive(journey) } }
-                    )
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
-            }
-        }
-    }
-}
-
-
-// MARK: - Main View Refatorada
 
 struct ChaptersGalleryView: View {
     
@@ -130,58 +34,52 @@ struct ChaptersGalleryView: View {
             ZStack {
                 AppBackground()
                 
-                VStack(spacing: 0) {
-                    List {
-                        // Seção "Minha Mente"
-                        Section {
-                            AllThoughtsRow {
-                                // Navigation to all thoughts
-                                openAllThoughts.toggle()
-                            }
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                        }
+                ScrollView {
+                    VStack(spacing: 0) {
                         
-                        // Seção das Jornadas Ativas
-                        JourneySection(
-                            title: "Jornadas (\(activeJourneys.count))",
-                            journeys: activeJourneys,
-                            onJourneyTap: navigateToJourney,
-                            onJourneyEdit: editJourney,
-                            onJourneyArchive: archiveJourney,
-                            onJourneyDelete: deleteJourney,
-                            onJourneyUnarchive: nil
-                        )
-                        
-                        // Seção das Jornadas Arquivadas
-                        if showingArchived {
-                            JourneySection(
-                                title: "Arquivadas",
-                                journeys: archivedJourneys,
-                                onJourneyTap: navigateToJourney,
-                                onJourneyEdit: editJourney,
-                                onJourneyArchive: archiveJourney,
-                                onJourneyDelete: deleteJourney,
-                                onJourneyUnarchive: unarchiveJourney
-                            )
-                        }
-                        
-                        // Estado vazio
-                        if activeJourneys.isEmpty && !showingArchived {
-                            Section {
-                                EmptyJourneysView {
-                                    addNewJourney = true
+                        // Chapters...
+                        VStack(spacing: 60) {
+                            
+                            Text("Capítulos.")
+                                .font(DesignTokens.Typography.title)
+                                .textCase(.lowercase)
+                                .foregroundStyle(DesignTokens.Colors.primary)
+                            
+                            VStack(spacing: 18) {
+                                // General Chapters...
+                                generalChaptersView
+                                
+                                // User's Chapters...
+                                if !journeys.isEmpty {
+                                    userChaptersView
                                 }
-                                .listRowBackground(Color.clear)
-                                .listRowSeparator(.hidden)
+                                
+                                // Archived Chapters...
+                                if showingArchived {
+                                    userChaptersView
+                                    // archivedJourneys
+                                }
+                            }
+                            // Empty State...
+                            if activeJourneys.isEmpty && !showingArchived {
+                                EmptyJourneysView()
+                                //.background(.green)
                             }
                         }
+                        
+                        // Tags...
+                        Text("Etiquetas.")
+                            .font(DesignTokens.Typography.title)
+                            .foregroundStyle(DesignTokens.Colors.primary)
+                            .textCase(.lowercase)
+                            .padding(.top, 80)
                     }
-                    .listStyle(.plain)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-                .padding(.vertical, DesignTokens.Spacing.xl)
+                    .padding(.vertical, DesignTokens.Spacing.xl)
+                    .padding(.horizontal, 24)
                 }
+                .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+                .toolbarBackgroundVisibility(.hidden, for: .bottomBar)
+
                 .toolbar {
                     // Leading toolbar item
                     if !archivedJourneys.isEmpty {
@@ -209,9 +107,9 @@ struct ChaptersGalleryView: View {
                             Button(action: { addNewJourney = true }) {
                                 HStack(spacing: DesignTokens.Spacing.sm) {
                                     Image(systemName: "plus.circle.fill")
-                                    Text("Adicionar jornada")
+                                    Text("Adicionar capítulo")
                                 }
-                                .fontWeight(.semibold)
+                                .font(DesignTokens.Typography.subtitle)
                             }
                             
                             Spacer()
@@ -219,22 +117,19 @@ struct ChaptersGalleryView: View {
                     }
                 }
                 .sheet(isPresented: $addNewJourney) {
-                    NewJourneyFormView(journey: selectedJourney)
+                    ChapterFormView(journey: selectedJourney)
                         .onDisappear { selectedJourney = nil }
                 }
                 .navigationDestination(item: $selectedJourney) { _ in 
-                    DetailedJourneyView(allThoughts: false, journey: selectedJourney)
+                    ChapterDetailedView(allThoughts: false, journey: selectedJourney)
                 }
                 .navigationDestination(isPresented: $openAllThoughts) {
-                    DetailedJourneyView(allThoughts: true, journey: nil)
+                    ChapterDetailedView(allThoughts: true, journey: nil)
                 }
             }
         }
     }
     
-    // MARK: - Subviews
-    
-
     
     // MARK: - Actions
     
@@ -276,123 +171,109 @@ struct ChaptersGalleryView: View {
     }
 }
 
-// MARK: - Journey Row Components
-
-struct JourneyIcon: View {
-    let emoji: String
-    let isArchived: Bool
-    
-    var body: some View {
-        Text(emoji)
-            .font(DesignTokens.Typography.title)
-            .frame(width: 32, height: 32)
-            .background(DesignTokens.Colors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
-            .opacity(isArchived ? 0.6 : 1.0)
-    }
-}
-
-struct JourneyInfo: View {
-    let journey: Journey
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            HStack {
-                Text(journey.name)
-                    .font(DesignTokens.Typography.body)
-                    .fontWeight(.medium)
+extension ChaptersGalleryView {
+    var generalChaptersView: some View {
+        HStack {
+            VStack(alignment: .leading) {
                 
-                if journey.isArchived {
-                    StatusIndicator(
-                        iconName: "archivebox.fill",
-                        color: DesignTokens.Colors.notification,
-                        size: .caption
-                    )
-                }
+                // Recents...
+                JourneyRow(journey: Journey(name: "recentes"), onTap: {
+                    openAllThoughts.toggle()
+                })
+                
+                // Favorites...
+                JourneyRow(journey: Journey(name: "favoritos"), onTap: {
+                    openAllThoughts.toggle()
+                })
+                
+                // Ecos...
+                JourneyRow(journey: Journey(name: "ecos"), onTap: {
+                    openAllThoughts.toggle()
+                })
+
             }
             
-            Text("\(journey.thoughtCount) pensamento\(journey.thoughtCount == 1 ? "" : "s")")
-                .font(DesignTokens.Typography.caption)
-                .foregroundColor(DesignTokens.Colors.secondaryText)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+    }
+    
+    var userChaptersView: some View {
+        HStack {
+            VStack(alignment: .leading)  {
+                Text("Criados por mim")
+                    .font(DesignTokens.Typography.tag)
+                    .foregroundStyle(.tertiary)
+                    .textCase(.lowercase)
+                    .padding(.vertical, 6)
+                
+                ForEach(journeys) { journey in
+                    JourneyRow(journey: journey) {
+                        selectedJourney = journey
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            
+            Spacer()
         }
     }
 }
 
-struct JourneyActivity: View {
-    let thoughtCount: Int
+
+struct EmptyJourneysView: View {
     
     var body: some View {
-        if thoughtCount > 0 {
-            Circle()
-                .fill(Color.blue)
-                .frame(width: 8, height: 8)
+        VStack(spacing: DesignTokens.Spacing.lg) {
+            Image(systemName: "folder.badge.plus")
+                .font(.largeTitle)
+                .foregroundColor(DesignTokens.Colors.secondaryText)
+            
+            Text("Nenhum capítulo criado.")
+                .font(DesignTokens.Typography.subtitle)
+                .foregroundColor(DesignTokens.Colors.secondaryText)
+            
+            Text("Crie e organize seus pensamentos em capítulos da sua história.")
+                .font(DesignTokens.Typography.caption)
+                .foregroundColor(DesignTokens.Colors.secondaryText)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
         }
+        .frame(maxWidth: .infinity, minHeight: 400)
+        .padding(.vertical, 50)
     }
 }
 
 struct JourneyRow: View {
     let journey: Journey
     let onTap: () -> Void
-    let onEdit: () -> Void
-    let onArchive: () -> Void
-    let onDelete: () -> Void
-    let onUnarchive: (() -> Void)?
     
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: DesignTokens.Spacing.md) {
-                JourneyIcon(emoji: journey.emoji, isArchived: journey.isArchived)
+
+                Image(systemName: "star.fill")
+                    .font(DesignTokens.Typography.tag)
+                    .foregroundStyle(.white)
+                    .padding(6)
+                    //.frame(width: 32, height: 32)
+                    .background(.accent)
+                    .clipShape(Circle())
+                    .opacity(journey.isArchived ? 0.6 : 1.0)
                 
-                JourneyInfo(journey: journey)
+                Text(journey.name)
+                    .textCase(.lowercase)
+                    .font(DesignTokens.Typography.body)
+                    .tint(DesignTokens.Colors.primary)
                 
-                Spacer()
-                
-                JourneyActivity(thoughtCount: journey.thoughtCount)
+                Text("(2)")
+                    .font(DesignTokens.Typography.tag)
+                    .tint(Color.secondary)
+        
             }
-            .padding(.vertical, DesignTokens.Spacing.xs)
-        }
-        .contextMenu {
-            journeyContextMenu
-        }
-        .swipeActions(edge: .trailing) {
-            journeySwipeActions
-        }
-    }
-    
-    @ViewBuilder
-    private var journeyContextMenu: some View {
-        if !journey.isArchived {
-            Button(action: onEdit) {
-                Label("Editar", systemImage: "pencil")
-            }
-            
-            Button(action: onArchive) {
-                Label("Arquivar", systemImage: "archivebox")
-            }
-        } else if let onUnarchive = onUnarchive {
-            Button(action: onUnarchive) {
-                Label("Desarquivar", systemImage: "tray.and.arrow.up")
-            }
+            .padding(.vertical, 8)
         }
         
-        Button(role: .destructive, action: onDelete) {
-            Label("Excluir", systemImage: "trash")
-        }
-    }
-    
-    @ViewBuilder
-    private var journeySwipeActions: some View {
-        Button(role: .destructive, action: onDelete) {
-            Image(systemName: "trash.fill")
-        }
-        .tint(.red)
-        
-        if !journey.isArchived {
-            Button(action: onArchive) {
-                Image(systemName: "archivebox.fill")
-            }
-            .tint(.orange)
-        }
     }
 }
 

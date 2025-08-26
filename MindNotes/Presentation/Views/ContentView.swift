@@ -36,7 +36,7 @@ struct ContentView: View {
                 AppBackground()
                 
                 ScrollView {
-                   VStack(alignment: .center, spacing: 200) {
+                   VStack(alignment: .center, spacing: 160) {
                         headerView
                        
                         addThoughtButton
@@ -44,25 +44,22 @@ struct ContentView: View {
                         
                         recentsSection
                     }
-                   //.background(.red)
                 }
-               // .background(.yellow)
             }
             .navigationDestination(item: $selectedThought) { thought in
-                DetailedThoughtView(thought: thought)
+                ThoughtDetailedView(thought: thought)
             }
             .navigationDestination(isPresented: $addNewThought) {
-                NewThoughtFormView(namespace: transitionNamespace)
+                ThoughtFormView(namespace: transitionNamespace)
                     .navigationTransition(.zoom(sourceID: addNewThought, in: transitionNamespace))
             }
-            .fullScreenCover(isPresented: $showJourneys) {
-                GalleryJourneyView(showJourneyView: $showJourneys)
+            .sheet(isPresented: $showJourneys) {
+                ChaptersGalleryView(showJourneyView: $showJourneys)
             }
             .onOpenURL { url in
                 addNewThought = true
             }
         }
-        //.tint(.primary)
     }
     
     // MARK: - Subviews as variables
@@ -82,14 +79,17 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                VStack {
-                    Text("mind notes")
+                VStack(spacing: 6) {
+                    Text("uma frase bem legal.")
                         .font(DesignTokens.Typography.title)
-                        .foregroundStyle(DesignTokens.Colors.primaryText)
-                    Text("de mateus")
+                        .foregroundStyle(DesignTokens.Colors.primary)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("11 ago")
                         .font(DesignTokens.Typography.caption)
                         .foregroundStyle(DesignTokens.Colors.secondaryText)
                 }
+                .padding(.horizontal)
                 
                 Spacer()
 
@@ -103,9 +103,10 @@ struct ContentView: View {
                 .padding(.bottom)
                 .hidden()
             }
-            .padding(.vertical, 36)
 
         }
+        .padding(.vertical, 36)
+        .padding(.top, 120)
         //.background(.green)
         //.padding(.horizontal, 24)
     }
@@ -119,55 +120,54 @@ struct ContentView: View {
             ZStack {
                 Image("mainButton")
                     .resizable()
-                    .frame(width: 120, height: 120)
+                    .frame(width: 60, height: 60)
                 // Ícone no centro
-                Image(systemName: "plus")
-                    .font(.system(size: 32, weight: .bold))
+                Image(systemName: "leaf")
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
+                    .hidden()
             }
         }
     }
     
     private var recentsSection: some View {
         VStack(alignment: .center, spacing: 24) {
-            Text("Hoje")
+            Text("Recentes")
                 .font(DesignTokens.Typography.caption)
                 .foregroundStyle(DesignTokens.Colors.secondaryText)
-                //.padding(.horizontal, 24)
             
-            // TODO: - Arrumar essa navegacão de botão e o ForEach
-            ForEach(0..<5) { thought in
+            ForEach(0..<3) { thought in
                 Button {
                     selectedThought = thoughts.first
                 } label: {
                     ThoughtRowView(thought: thoughts[thought])
-                        //.padding(.horizontal)
-                        .id(thoughts.first?.id) // 🔹 Força o SwiftUI a tratar como nova view
-                                    .transition(.asymmetric(
-                                        insertion: .move(edge: .trailing).combined(with: .opacity),
-                                        removal: .move(edge: .leading).combined(with: .opacity)
-                                    ))
-                                    //.padding()
-                                    .animation(.spring(duration: 0.4), value: thoughts.first?.id)
+                        .id(thoughts.first?.id)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
+                        .animation(.spring(duration: 0.4), value: thoughts.first?.id)
                 }
             }
-       
+            
             // Chapters Button...
             Button {
                 // Go to Chapters...
                 showJourneys.toggle()
             } label: {
-                Image(systemName: "book.pages.fill")
-                    .foregroundStyle(.white)
+                Image(systemName: "bookmark.fill")
+                    .foregroundStyle(.accent)
                     .padding(10)
-                    .background(.accent)
-                    .clipShape(Circle())
+                    .background {
+                        Circle()
+                            .stroke(.accent, style: StrokeStyle(lineWidth: 2))
+                    }
+                    
             }
             .padding(.vertical, 16)
 
         }
         .padding()
-        //.background(.blue)
     }
         
     
@@ -249,5 +249,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Thought.self, inMemory: true)
+        .modelContainer(for: [Journey.self, Thought.self], inMemory: true)
 }

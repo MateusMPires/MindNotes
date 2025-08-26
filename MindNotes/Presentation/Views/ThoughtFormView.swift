@@ -204,8 +204,7 @@ struct OtherView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "#131313")
-                .ignoresSafeArea()
+            AppBackground()
             
             ScrollView {
                 VStack(spacing: 24) {
