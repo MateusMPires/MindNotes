@@ -11,21 +11,21 @@ import SwiftData
 @Model
 class Journey {
     var id: UUID
-    var name: String
+    var title: String
     var notes: String?
-    var emoji: String
+    var icon: String
     var colorHex: String
     var createdDate: Date
     var isArchived: Bool
     
-    @Relationship(deleteRule: .cascade, inverse: \Thought.journey)
+    @Relationship(deleteRule: .cascade, inverse: \Thought.chapter)
     var thoughts: [Thought]?
     
-    init(name: String, emoji: String = "folder.fill", colorHex: String = "#007AFF") {
+    init(title: String, notes:String? = nil, icon: String = "", colorHex: String = "#007AFF") {
         self.id = UUID()
-        self.name = name
-        self.notes = nil
-        self.emoji = emoji
+        self.title = title
+        self.notes = notes
+        self.icon = icon
         self.colorHex = colorHex
         self.createdDate = Date()
         self.isArchived = false
@@ -35,7 +35,7 @@ class Journey {
     // MARK: - Essential Methods
     
     func addThought(_ thought: Thought) {
-        thought.journey = self
+        thought.chapter = self
         if thoughts == nil {
             thoughts = []
         }
@@ -44,7 +44,7 @@ class Journey {
     
     func removeThought(_ thought: Thought) {
         thoughts?.removeAll { $0.id == thought.id }
-        thought.journey = nil
+        thought.chapter = nil
     }
     
     func toggleArchived() {
@@ -78,12 +78,12 @@ class Journey {
     }
 }
 
-// MARK: - Predefined Journeys
+
+// MARK: - Predefined Thoughts
 extension Journey {
-    static let defaultJourneys = [
-        Journey(name: "Reflexões Pessoais", emoji: "🤔", colorHex: "#FF9500"),
-        Journey(name: "Objetivos", emoji: "🎯", colorHex: "#34C759"),
-        Journey(name: "Gratidão", emoji: "🙏", colorHex: "#FF2D92"),
-        Journey(name: "Aprendizados", emoji: "📚", colorHex: "#5856D6")
+    static let mockData = [
+        Journey(title: "Terapia"),
+        Journey(title: "Carreira")
+
     ]
 }

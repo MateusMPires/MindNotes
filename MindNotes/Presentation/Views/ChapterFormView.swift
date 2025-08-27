@@ -10,15 +10,24 @@ import SwiftUI
 // Preciso de: Função de Criar uma jornada..
 
 struct ChapterFormView: View {
+    
     let journey: Journey?
     
+    // Closure onSave()
+    // Closure que retorna todas as informações de uma Journey
+    var onJourneyCreated: ((_ title: String,
+                            _ notes: String?,
+                            _ icon: String,
+                            _ color: Color) -> Void)?
+
+
     @EnvironmentObject private var journeyService: JourneyService
     
-    // SwiftData...
     @Environment(\.dismiss) private var dismiss
     
-    @State private var name: String = ""
-    @State private var selectedEmoji: String = "📝"
+    @State private var title: String = ""
+    @State private var notes: String = ""
+    @State private var selectedIcon: String = "folder.fill"
     @State private var selectedColor: Color = .blue
     
     private let availableEmojis = ["📝", "🤔", "🎯", "🙏", "📚", "💡", "🌟", "❤️", "🎨", "🌱", "🚀", "✨", "💭", "🧠", "📖", "🎪", "🌈", "🦋", "🌸", "🍀"]
@@ -32,16 +41,7 @@ struct ChapterFormView: View {
         journey != nil
     }
     
-    init(journey: Journey? = nil) {
-        self.journey = journey
-        
-        if let journey = journey {
-            _name = State(initialValue: journey.name)
-            _selectedEmoji = State(initialValue: journey.emoji)
-            _selectedColor = State(initialValue: Color(hex: journey.colorHex))
-        }
-    }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -51,16 +51,17 @@ struct ChapterFormView: View {
                         Spacer()
                         
                         VStack(spacing: 16) {
-                            Text(selectedEmoji)
-                                .font(.system(size: 60))
-                                .frame(width: 100, height: 100)
-                                .background(selectedColor.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                            Image(systemName: selectedIcon)
+                                .font(.system(size: 30))
+                                .frame(width: 60, height: 60)
+                                .background(selectedColor)
+                                .clipShape(Circle())
+                                .foregroundStyle(.white)
                             
-                            Text(name.isEmpty ? "Nome da Jornada" : name)
+                            Text(title.isEmpty ? "Nome do Capítulo" : title)
                                 .font(.headline)
                                 .fontWeight(.semibold)
-                                .foregroundColor(name.isEmpty ? .secondary : .primary)
+                                .foregroundColor(title.isEmpty ? .secondary : .primary)
                         }
                         
                         Spacer()
@@ -69,7 +70,7 @@ struct ChapterFormView: View {
                 }
                 
                 Section("Informações") {
-                    TextField("Nome da jornada", text: $name)
+                    TextField("Nome da Capítulo", text: $title)
                         .textInputAutocapitalization(.words)
                 }
                 
@@ -124,7 +125,7 @@ struct ChapterFormView: View {
                     .padding(.vertical, 8)
                 }
             }
-            .navigationTitle(isEditing ? "Editar Jornada" : "Nova Jornada")
+            .navigationTitle(isEditing ? "Editar Capítulo" : "Nova Capítulo")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -135,58 +136,29 @@ struct ChapterFormView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Salvar" : "Criar") {
+                    
+                        onJourneyCreated?(title, notes, selectedIcon, selectedColor)
                         
-                        journeyService.saveJourney(name, selectedEmoji, selectedColor, journey: journey)
                         dismiss()
                     }
                     .fontWeight(.semibold)
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
+            .onAppear {
+                       if let journey = journey {
+                           title = journey.title
+                           selectedIcon = journey.icon
+                           selectedColor = Color(hex: journey.colorHex)
+                       }
+                   }
         }
     }
 
 }
 
-// MARK: - Color Extensions
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
 
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-    
-    func toHex() -> String {
-        let uic = UIColor(self)
-        guard let components = uic.cgColor.components, components.count >= 3 else {
-            return "#000000"
-        }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
-    }
-}
 
 #Preview {
-    ChapterFormView()
+    ChapterFormView(journey: Journey(title: "Terapia"))
 }

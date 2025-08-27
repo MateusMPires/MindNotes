@@ -35,7 +35,7 @@ struct ThoughtDetailedView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingEditSheet) {
-                ThoughtEditFormView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, journey: thought.journey))
+                ThoughtEditFormView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, chapter: thought.chapter))
             }
             .alert("Excluir Pensamento", isPresented: $showingDeleteAlert) {
                 Button("Cancelar", role: .cancel) { }
@@ -56,8 +56,8 @@ struct ThoughtDetailedView: View {
             // Header with status indicators
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    if let journey = thought.journey {
-                        Text(journey.name)
+                    if let journey = thought.chapter {
+                        Text(journey.title)
                             .font(.custom("Manrope-Regular", size: 12))
                             .foregroundColor(.secondary)
                     } else {
@@ -135,39 +135,39 @@ struct ThoughtDetailedView: View {
     // MARK: - Tags Section
     private var tagsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: "tag.fill")
-                    .font(.title3)
-                    .foregroundColor(.blue)
-                
-                Text("Etiquetas")
-                    .font(.custom("Manrope-Regular", size: 14))
-                    .fontWeight(.medium)
-            }
-            
-            FlowLayout(spacing: 8) {
-                ForEach(thought.tags, id: \.self) { tag in
-                    Text("#\(tag)")
-                        .font(.custom("Manrope-Regular", size: 12))
-                        .textCase(.lowercase)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(.blue.opacity(0.2))
-                        .foregroundColor(.blue)
-                        .clipShape(.capsule)
-                }
-            }
-        }
-        .padding(20)
-        .background {
-            TransparentBlurView(removeAllFilters: true)
-                .blur(radius: 9, opaque: true)
-                .background(.blue.opacity(0.05))
-        }
-        .clipShape(.rect(cornerRadius: 12, style: .continuous))
-        .background {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(.blue.opacity(0.3), lineWidth: 1)
+//            HStack(spacing: 8) {
+//                Image(systemName: "tag.fill")
+//                    .font(.title3)
+//                    .foregroundColor(.blue)
+//                
+//                Text("Etiquetas")
+//                    .font(.custom("Manrope-Regular", size: 14))
+//                    .fontWeight(.medium)
+//            }
+//            
+////            FlowLayout(spacing: 8) {
+////                ForEach(thought.tagsId, id: \.self) { tag in
+////                    Text("#\(tag)")
+////                        .font(.custom("Manrope-Regular", size: 12))
+////                        .textCase(.lowercase)
+////                        .padding(.horizontal, 12)
+////                        .padding(.vertical, 6)
+////                        .background(.blue.opacity(0.2))
+////                        .foregroundColor(.blue)
+////                        .clipShape(.capsule)
+////                }
+////            }
+//        }
+//        .padding(20)
+//        .background {
+//            TransparentBlurView(removeAllFilters: true)
+//                .blur(radius: 9, opaque: true)
+//                .background(.blue.opacity(0.05))
+//        }
+//        .clipShape(.rect(cornerRadius: 12, style: .continuous))
+//        .background {
+//            RoundedRectangle(cornerRadius: 12, style: .continuous)
+//                .stroke(.blue.opacity(0.3), lineWidth: 1)
         }
     }
     
@@ -245,18 +245,18 @@ struct ThoughtDetailedView: View {
     }
     
     private func shareThought() {
-        var shareText = thought.content
-        
-        if let notes = thought.notes, !notes.isEmpty {
-            shareText += "\n\n" + notes
-        }
-        
-        if !thought.tags.isEmpty {
-            shareText += "\n\nTags: " + thought.tags.map { "#\($0)" }.joined(separator: " ")
-        }
-        
-        // Share implementation here
-        print("Compartilhando: \(shareText)")
+//        var shareText = thought.content
+//        
+//        if let notes = thought.notes, !notes.isEmpty {
+//            shareText += "\n\n" + notes
+//        }
+//        
+//        if !thought.tags.isEmpty {
+//            shareText += "\n\nTags: " + thought.tags.map { "#\($0)" }.joined(separator: " ")
+//        }
+//        
+//        // Share implementation here
+//        print("Compartilhando: \(shareText)")
     }
 }
 
@@ -320,7 +320,7 @@ struct FlowLayout: Layout {
     let sampleThought = Thought(
         content: "Este é um pensamento de exemplo que demonstra como a view ficará com conteúdo mais longo e detalhado",
         notes: "Algumas notas adicionais que complementam o pensamento principal e fornecem mais contexto",
-        tags: ["exemplo", "teste", "minimalismo"],
+        tags: [ThoughtTag(id: .init(),title: "conclusão")],
         shouldRemind: true,
         reminderDate: Date()
     )

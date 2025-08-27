@@ -13,11 +13,11 @@ struct ThoughtDraft {
     var createdDate: Date = Date()
     var modifiedDate: Date = Date()
     var isFavorite: Bool = false
-    var tags: [String] = []
+    var tags: [ThoughtTag] = []
     var shouldRemind: Bool = false
     var reminderDate: Date = Date()
     var isCompleted: Bool = false
     
-    var journey: Journey? = nil
+    var chapter: Journey? = nil
 
 }

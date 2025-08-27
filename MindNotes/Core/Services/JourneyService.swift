@@ -18,24 +18,36 @@ class JourneyService: ObservableObject {
     }
     
     
-    func saveJourney(_ name: String, _ selectedEmoji: String, _ selectedColor: Color, journey: Journey? = nil) {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    func saveJourney(title: String,
+                        notes: String? = nil,
+                        icon: String,
+                        color: Color,
+                     journey: Journey? = nil) {
+        
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if let journey = journey {
-            // Edit existing journey
-            journey.name = trimmedName
-            journey.emoji = selectedEmoji
-            journey.colorHex = selectedColor.toHex()
+            // Edita jornada existente
+            journey.title = trimmedTitle
+            journey.notes = notes
+            journey.icon = icon
+            journey.colorHex = color.toHex()
         } else {
-            // Create new journey
+            // Cria nova jornada
             let newJourney = Journey(
-                name: trimmedName,
-                emoji: selectedEmoji,
-                colorHex: selectedColor.toHex()
+                title: trimmedTitle,
+                notes: notes,
+                icon: icon,
+                colorHex: color.toHex()
             )
-            
             context.insert(newJourney)
-            
+        }
+        
+        // Salva no contexto
+        do {
+            try context.save()
+        } catch {
+            print("Erro ao salvar jornada: \(error)")
         }
     }
 

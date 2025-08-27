@@ -10,11 +10,12 @@ import SwiftUI
 struct IconButton: View {
     let iconName: String
     let size: CGFloat
-    let action: () -> Void
+    let action: () -> Void?
     var isHidden: Bool = false
     
     var body: some View {
-        Button(action: action) {
+        Button {
+        } label: {
             Image(systemName: iconName)
                 .font(.system(size: size))
                 .symbolRenderingMode(.hierarchical)

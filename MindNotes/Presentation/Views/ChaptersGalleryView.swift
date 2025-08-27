@@ -7,17 +7,21 @@ import SwiftData
 
 struct ChaptersGalleryView: View {
     
+    @Environment(\.dismiss) var dismiss
+    
     // Navigation...
-    @State private var selectedJourney: Journey?
-    @State private var addNewJourney = false
     @State private var showingArchived = false
-    @State private var openAllThoughts: Bool = false
+    @State private var openJourneyForm: Bool = false
+
     @Binding var showJourneyView: Bool
     
     
     // Data...
     @Query(sort: \Journey.createdDate, order: .reverse) private var journeys: [Journey]
+    
     @EnvironmentObject var journeyService: JourneyService
+    @EnvironmentObject var thoughtService: ThoughtService
+
     
     // Computed Properties
     private var activeJourneys: [Journey] {
@@ -60,19 +64,14 @@ struct ChaptersGalleryView: View {
                                     // archivedJourneys
                                 }
                             }
-                            // Empty State...
-                            if activeJourneys.isEmpty && !showingArchived {
-                                EmptyJourneysView()
-                                //.background(.green)
-                            }
                         }
                         
                         // Tags...
-                        Text("Etiquetas.")
-                            .font(DesignTokens.Typography.title)
-                            .foregroundStyle(DesignTokens.Colors.primary)
-                            .textCase(.lowercase)
-                            .padding(.top, 80)
+//                        Text("Etiquetas.")
+//                            .font(DesignTokens.Typography.title)
+//                            .foregroundStyle(DesignTokens.Colors.primary)
+//                            .textCase(.lowercase)
+//                            .padding(.top, 80)
                     }
                     .padding(.vertical, DesignTokens.Spacing.xl)
                     .padding(.horizontal, 24)
@@ -86,9 +85,10 @@ struct ChaptersGalleryView: View {
                         ToolbarItem(placement: .navigationBarLeading) {
                             IconButton(
                                 iconName: showingArchived ? "eye.slash" : "eye",
-                                size: 16,
-                                action: toggleArchivedView
-                            )
+                                size: 16) {
+                                    
+                                }
+                            
                         }
                     }
                     
@@ -96,15 +96,16 @@ struct ChaptersGalleryView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         IconButton(
                             iconName: "xmark.circle.fill",
-                            size: 20,
-                            action: closeView
-                        )
+                            size: 20
+                        ) {
+                            
+                        }
                     }
                     
                     // Bottom toolbar item
                     ToolbarItem(placement: .bottomBar) {
                         HStack {
-                            Button(action: { addNewJourney = true }) {
+                            Button(action: { openJourneyForm.toggle() }) {
                                 HStack(spacing: DesignTokens.Spacing.sm) {
                                     Image(systemName: "plus.circle.fill")
                                     Text("Adicionar capítulo")
@@ -116,107 +117,109 @@ struct ChaptersGalleryView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $addNewJourney) {
-                    ChapterFormView(journey: selectedJourney)
-                        .onDisappear { selectedJourney = nil }
+                .sheet(isPresented: $openJourneyForm) {
+                    ChapterFormView(journey: nil) { title, notes, icon, color in
+                        
+                        // Se tiver uma jornada selecionada, será edição
+                        journeyService.saveJourney(
+                            title: title,
+                            notes: notes,
+                            icon: icon,
+                            color: color,
+                            journey: nil
+                        )
+                    }
                 }
-                .navigationDestination(item: $selectedJourney) { _ in 
-                    ChapterDetailedView(allThoughts: false, journey: selectedJourney)
+
+                
+                .navigationDestination(for: ChapterRoute.self) { route in
+                    switch route {
+                    case .journey(let journey):
+                        ChapterDetailedView(
+                            chapterTitle: journey.title,
+                            chapterDescription: journey.notes ?? "",
+                            chapterIcon: journey.icon,
+                            chapterHex: journey.colorHex,
+                            chapterStartDate: journey.createdDate,
+                            thoughts: try! thoughtService.fetchThoughts(for: journey)
+                        )
+                        
+                    case .filtered(let filter):
+                        switch filter {
+                        case .recents:
+                            ChapterDetailedView(
+                                chapterTitle: filter.title,
+                                chapterDescription: filter.notes,
+                                chapterIcon: filter.icon,
+                                chapterHex: filter.colorHex,
+                                chapterStartDate: Date(),
+                                thoughts: try! thoughtService.fetchRecentThoughts()
+                            )
+                        case .favorites:
+                            ChapterDetailedView(
+                                chapterTitle: filter.title,
+                                chapterDescription: filter.notes,
+                                chapterIcon: filter.icon,
+                                chapterHex: filter.colorHex,
+                                chapterStartDate: Date(),
+                                thoughts: try! thoughtService.fetchFavoriteThoughts()
+                            )
+                        case .echoes:
+                            ChapterDetailedView(
+                                chapterTitle: filter.title,
+                                chapterDescription: filter.notes,
+                                chapterIcon: filter.icon,
+                                chapterHex: filter.colorHex,
+                                chapterStartDate: Date(),
+                                thoughts: try! thoughtService.fetchThoughtsWithReminders()
+                            )
+                        }
+                    }
                 }
-                .navigationDestination(isPresented: $openAllThoughts) {
-                    ChapterDetailedView(allThoughts: true, journey: nil)
-                }
+
             }
         }
-    }
-    
-    
-    // MARK: - Actions
-    
-    private func navigateToJourney(_ journey: Journey) {
-        selectedJourney = journey
-    }
-    
-    private func editJourney(_ journey: Journey) {
-        selectedJourney = journey
-        addNewJourney = true
-    }
-    
-    private func archiveJourney(_ journey: Journey) {
-        withAnimation(DesignTokens.Animations.quick) {
-            journeyService.archiveJourney(journey)
-        }
-    }
-    
-    private func unarchiveJourney(_ journey: Journey) {
-        withAnimation(DesignTokens.Animations.quick) {
-            journeyService.unarchiveJourney(journey)
-        }
-    }
-    
-    private func deleteJourney(_ journey: Journey) {
-        withAnimation(DesignTokens.Animations.quick) {
-            journeyService.deleteJourney(journey)
-        }
-    }
-    
-    private func toggleArchivedView() {
-        withAnimation(DesignTokens.Animations.quick) {
-            showingArchived.toggle()
-        }
-    }
-    
-    private func closeView() {
-        showJourneyView.toggle()
     }
 }
 
 extension ChaptersGalleryView {
     var generalChaptersView: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                
-                // Recents...
-                JourneyRow(journey: Journey(name: "recentes"), onTap: {
-                    openAllThoughts.toggle()
-                })
-                
-                // Favorites...
-                JourneyRow(journey: Journey(name: "favoritos"), onTap: {
-                    openAllThoughts.toggle()
-                })
-                
-                // Ecos...
-                JourneyRow(journey: Journey(name: "ecos"), onTap: {
-                    openAllThoughts.toggle()
-                })
-
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach([FilteredChapter.recents, .favorites, .echoes], id: \.self) { chapter in
+                NavigationLink(value: ChapterRoute.filtered(chapter)) {
+                    JourneyRowComponent(
+                        title: chapter.title,
+                        color: chapter.colorHex,
+                        icon: chapter.icon,
+                        thoughtsCount: 2 // ← pode calcular depois
+                    )
+                }
             }
-            
-            Spacer()
         }
         .padding(.horizontal, 16)
     }
+
     
     var userChaptersView: some View {
-        HStack {
-            VStack(alignment: .leading)  {
-                Text("Criados por mim")
-                    .font(DesignTokens.Typography.tag)
-                    .foregroundStyle(.tertiary)
-                    .textCase(.lowercase)
-                    .padding(.vertical, 6)
-                
-                ForEach(journeys) { journey in
-                    JourneyRow(journey: journey) {
-                        selectedJourney = journey
-                    }
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Criados por mim")
+                .font(DesignTokens.Typography.tag)
+                .foregroundStyle(.tertiary)
+                .textCase(.lowercase)
+                .padding(.vertical, 6)
+            
+            ForEach(journeys) { journey in
+                NavigationLink(value: ChapterRoute.journey(journey)) {
+                    JourneyRowComponent(
+                        title: journey.title,
+                        color: journey.colorHex,
+                        icon: journey.icon,
+                        thoughtsCount: journey.thoughtCount
+                    )
                 }
             }
-            .padding(.horizontal, 16)
-            
-            Spacer()
         }
+        .padding(.horizontal, 16)
     }
 }
 
@@ -244,43 +247,10 @@ struct EmptyJourneysView: View {
     }
 }
 
-struct JourneyRow: View {
-    let journey: Journey
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: DesignTokens.Spacing.md) {
-
-                Image(systemName: "star.fill")
-                    .font(DesignTokens.Typography.tag)
-                    .foregroundStyle(.white)
-                    .padding(6)
-                    //.frame(width: 32, height: 32)
-                    .background(.accent)
-                    .clipShape(Circle())
-                    .opacity(journey.isArchived ? 0.6 : 1.0)
-                
-                Text(journey.name)
-                    .textCase(.lowercase)
-                    .font(DesignTokens.Typography.body)
-                    .tint(DesignTokens.Colors.primary)
-                
-                Text("(2)")
-                    .font(DesignTokens.Typography.tag)
-                    .tint(Color.secondary)
-        
-            }
-            .padding(.vertical, 8)
-        }
-        
-    }
-}
-
 // MARK: - Preview
 #Preview {
     
-    var sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer = {
         let schema = Schema(versionedSchema: SchemaV1.self)
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         

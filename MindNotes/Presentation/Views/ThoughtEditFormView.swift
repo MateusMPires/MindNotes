@@ -71,7 +71,7 @@ struct ThoughtEditFormView: View {
                     
                     // Journey Section...
                     Section {
-                        Picker(selection: $draft.journey ) {
+                        Picker(selection: $draft.chapter ) {
                             if journeys.isEmpty {
                                 ContentUnavailableView("Sem jornadas por enquanto...", image: "")
                             } else {
@@ -79,7 +79,7 @@ struct ThoughtEditFormView: View {
                                     .tag(nil as Journey?)
                                 
                                 ForEach(journeys, id: \.self) { journey in
-                                    Text(journey.name)
+                                    Text(journey.title)
                                         .tag(journey)
                                 }
                             }
@@ -109,14 +109,14 @@ struct ThoughtEditFormView: View {
             }
         }
     }
-    
-    private func addTag() {
-        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedTag.isEmpty && !draft.tags.contains(trimmedTag) {
-            draft.tags.append(trimmedTag)
-            newTag = ""
-        }
-    }
+//    
+//    private func addTag() {
+//        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
+//        if !trimmedTag.isEmpty && !draft.tagsId.contains(trimmedTag) {
+//            draft.tags.append(trimmedTag)
+//            newTag = ""
+//        }
+//    }
     
     private func removeTag(_ tag: String) {
         //tags.removeAll { $0 == tag }
@@ -135,7 +135,7 @@ struct ThoughtEditFormView: View {
         thoughtToEdit.reminderDate = draft.shouldRemind ? draft.reminderDate : nil
         thoughtToEdit.createdDate = draft.createdDate
         thoughtToEdit.isFavorite = draft.isFavorite
-        thoughtToEdit.journey = draft.journey
+        thoughtToEdit.chapter = draft.chapter
         
         
         
@@ -172,7 +172,7 @@ struct OtherEditView: View {
                                             .font(.caption)
                                         
                                         Button {
-                                            removeTag(tag)
+                                            //removeTag(tag)
                                         } label: {
                                             Image(systemName: "xmark")
                                                 .font(.caption2)
@@ -194,12 +194,12 @@ struct OtherEditView: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                             .onSubmit {
-                                addTag()
+                                //addTag()
                             }
                         
                         if !newTag.isEmpty {
                             Button("Adicionar") {
-                                addTag()
+                                //addTag()
                             }
                             .foregroundColor(.blue)
                             .fontWeight(.medium)
@@ -254,17 +254,17 @@ struct OtherEditView: View {
         }
     }
     
-    private func addTag() {
-        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !trimmedTag.isEmpty && !draft.tags.contains(trimmedTag) {
-            draft.tags.append(trimmedTag)
-            newTag = ""
-        }
-    }
-    
-    private func removeTag(_ tag: String) {
-        draft.tags.removeAll { $0 == tag }
-    }
+//    private func addTag() {
+//        let trimmedTag = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
+//        if !trimmedTag.isEmpty && !draft.tags.contains(trimmedTag) {
+//            draft.tags.append(trimmedTag)
+//            newTag = ""
+//        }
+//    }
+//    
+//    private func removeTag(_ tag: String) {
+//        draft.tags.removeAll { $0 == tag }
+//    }
 }
 
 //#Preview {

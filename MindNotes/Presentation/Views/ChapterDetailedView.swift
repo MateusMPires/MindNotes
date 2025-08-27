@@ -14,46 +14,36 @@ import SwiftData
 
 struct ChapterDetailedView: View {
     
-    // Closure que será passada pelo OtherView
+    // View...
+    @Environment(\.dismiss) private var dismiss
+
+    // Closures que são resolvidas pela GalleryView
     var onArchive: (() -> Void)?
     
     var onDelete: (() -> Void)?
     
+    var onEdit: (() -> Void)?
 
-    // SwiftData
-     @Environment(\.modelContext) private var context
-     @Query private var allThoughtsQuery: [Thought]
-     
-     let allThoughts: Bool?
-     let journey: Journey?
+    // Info...
+    let chapterTitle: String
+    let chapterDescription: String?
+    let chapterIcon: String
+    let chapterHex: String
+    let chapterStartDate: Date?
+    
+    let thoughts: [Thought]
        
+    // Searching...
      @State private var searchText = ""
      @State private var selectedThought: Thought?
      @State private var showingTagFilter = false
-     
-     // Computed properties para melhor performance
-     private var thoughtsToShow: [Thought] {
-         if allThoughts == true {
-             return filteredThoughts(from: allThoughtsQuery)
-         } else {
-             return filteredThoughts(from: journey?.thoughts ?? [])
-         }
-     }
-     
-     private var navigationTitle: String {
-         if allThoughts == true {
-             return "minha mente"
-         } else {
-             return journey?.name ?? "Pensamentos"
-         }
-     }
+
      
      private var isEmpty: Bool {
-         thoughtsToShow.isEmpty
+         thoughts.isEmpty
      }
      
      var body: some View {
-//         NavigationStack {
          ZStack {
              
              AppBackground()
@@ -68,7 +58,7 @@ struct ChapterDetailedView: View {
              .navigationDestination(item: $selectedThought) { thought in
                  ThoughtDetailedView(thought: thought)
              }
-             .navigationTitle(navigationTitle)
+             .navigationTitle(chapterTitle)
              .navigationBarTitleDisplayMode(.inline)
              .searchable(text: $searchText, prompt: "Buscar pensamentos...")
              .toolbar {
@@ -84,7 +74,7 @@ struct ChapterDetailedView: View {
      @ViewBuilder
      private var thoughtListContent: some View {
          List {
-             if !thoughtsToShow.isEmpty {
+             if !thoughts.isEmpty {
                  thoughtsSection
              } else {
                  noResultsSection
@@ -98,7 +88,7 @@ struct ChapterDetailedView: View {
      private var thoughtsSection: some View {
          Section {
              LazyVStack {
-                 ForEach(thoughtsToShow) { thought in
+                 ForEach(thoughts) { thought in
 //                     Button {
 //                         selectedThought = thought
 //                     } label: {
@@ -121,7 +111,7 @@ struct ChapterDetailedView: View {
              
          } header: {
              if !searchText.isEmpty {
-                 Text("\(thoughtsToShow.count) resultado(s)")
+                 Text("\(thoughts.count) resultado(s)")
              } else {
                  Text(sectionTitle)
              }
@@ -175,11 +165,11 @@ struct ChapterDetailedView: View {
      // MARK: - Toolbar
      @ToolbarContentBuilder
      private var toolbarContent: some ToolbarContent {
-         if journey != nil {
+         //if journey != nil {
              ToolbarItem(placement: .navigationBarTrailing) {
                  journeyMenuButton
              }
-         }
+        // }
          
 //         ToolbarItem(placement: .bottomBar) {
 //             addThoughtButton
@@ -216,18 +206,21 @@ struct ChapterDetailedView: View {
              
              Button {
                  // Archive Journey
-                 archiveJourney()
+                 //archiveJourney()
              } label: {
-                 Label(
-                     journey?.isArchived == true ? "Desarquivar" : "Arquivar",
-                     systemImage: "archivebox"
-                 )
+//                 Label(
+//                     journey?.isArchived == true ? "Desarquivar" : "Arquivar",
+//                     systemImage: "archivebox"
+//                 )
              }
              
              Divider()
              
              Button(role: .destructive) {
-                 deleteJourney()
+                 //deleteJourney()
+                 dismiss()
+
+            
              } label: {
                  Label("Excluir Jornada", systemImage: "trash")
              }
@@ -255,20 +248,20 @@ struct ChapterDetailedView: View {
      }
      
      // MARK: - Helper Methods
-     private func filteredThoughts(from thoughts: [Thought]) -> [Thought] {
-         let filtered = thoughts.filter { thought in
-             if searchText.isEmpty {
-                 return true
-             }
-             
-             return thought.content.localizedCaseInsensitiveContains(searchText) ||
-                    thought.notes?.localizedCaseInsensitiveContains(searchText) == true ||
-                    thought.tags.contains { $0.localizedCaseInsensitiveContains(searchText) }
-         }
-         
-         // Ordenar por data de modificação (mais recente primeiro)
-         return filtered.sorted { $0.modifiedDate > $1.modifiedDate }
-     }
+//     private func filteredThoughts(from thoughts: [Thought]) -> [Thought] {
+//         let filtered = thoughts.filter { thought in
+//             if searchText.isEmpty {
+//                 return true
+//             }
+//             
+//             return thought.content.localizedCaseInsensitiveContains(searchText) ||
+//                    thought.notes?.localizedCaseInsensitiveContains(searchText) == true 
+//             //thought.tags.contains { $0.localizedCaseInsensitiveContains(searchText) }
+//         }
+//         
+//         // Ordenar por data de modificação (mais recente primeiro)
+//         return filtered.sorted { $0.modifiedDate > $1.modifiedDate }
+//     }
      
      private var sectionTitle: String {
          let formatter = DateFormatter()
@@ -278,20 +271,20 @@ struct ChapterDetailedView: View {
      }
      
      // MARK: - Actions
-     private func deleteThought(_ thought: Thought) {
-         withAnimation {
-             context.delete(thought)
-             try? context.save()
-         }
-     }
-     
-     private func toggleFavorite(_ thought: Thought) {
-         withAnimation {
-             thought.isFavorite.toggle()
-             thought.updateModifiedDate()
-             try? context.save()
-         }
-     }
+//     private func deleteThought(_ thought: Thought) {
+//         withAnimation {
+//             context.delete(thought)
+//             try? context.save()
+//         }
+//     }
+//     
+//     private func toggleFavorite(_ thought: Thought) {
+//         withAnimation {
+//             thought.isFavorite.toggle()
+//             thought.updateModifiedDate()
+//             try? context.save()
+//         }
+//     }
      
      private func shareThought(_ thought: Thought) {
          // Implementar compartilhamento
@@ -307,23 +300,27 @@ struct ChapterDetailedView: View {
          print("Compartilhando: \(shareText)")
      }
      
-     private func archiveJourney() {
-         guard let journey = journey else { return }
-         
-         withAnimation {
-             journey.isArchived.toggle()
-             try? context.save()
-         }
-     }
+//     private func archiveJourney() {
+//         guard let journey = journey else { return }
+//         
+//         withAnimation {
+//             journey.isArchived.toggle()
+//             try? context.save()
+//         }
+//     }
      
-     private func deleteJourney() {
-         guard let journey = journey else { return }
-         
-         withAnimation {
-             context.delete(journey)
-             try? context.save()
-         }
-     }
+//     private func deleteJourney() {
+//         guard let journey = journey else { return }
+//         
+//         withAnimation {
+//             context.delete(journey)
+//             try? context.save()
+//             
+//             
+//         }
+//         
+//         
+//     }
  }
 
 
@@ -385,6 +382,12 @@ struct TagFilterRowView: View {
 }
 
 #Preview {
-    ChapterDetailedView(allThoughts: true, journey: Journey(name: "Criativo"))
-        .modelContainer(for: [Journey.self, Thought.self], inMemory: true)
+    ChapterDetailedView(
+        chapterTitle: "Recentes",
+        chapterDescription: "a",
+        chapterIcon: "folder.fill",
+        chapterHex: "999999",
+        chapterStartDate: Date(),
+        thoughts: Thought.defaultThoughts
+    )
 }

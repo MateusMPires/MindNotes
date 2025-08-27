@@ -7,12 +7,25 @@
 		<key>MindNotes.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 		<key>MindNotesWidget-ExtensionExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>D071DD762E48229E00265FA4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D081A58B2E2687FF002F43C7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

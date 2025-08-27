@@ -16,22 +16,22 @@ class Thought {
     var createdDate: Date
     var modifiedDate: Date
     var isFavorite: Bool
-    var tags: [String]
+    var tags: [ThoughtTag]
     var shouldRemind: Bool
     var reminderDate: Date?
     var isCompleted: Bool
     
-    var journey: Journey?
+    var chapter: Journey?
     
     init(
         content: String,
         notes: String? = nil,
-        tags: [String] = [],
+        tags: [ThoughtTag] = [],
         shouldRemind: Bool = false,
         reminderDate: Date? = nil,
         createdDate: Date = Date(),
         isFavorite: Bool = false,
-        journey: Journey? = nil
+        chapter: Journey? = nil
     ) {
         self.id = UUID()
         self.content = content
@@ -43,7 +43,7 @@ class Thought {
         self.shouldRemind = shouldRemind
         self.reminderDate = reminderDate
         self.isCompleted = false
-        self.journey = journey
+        self.chapter = chapter
     }
     
     // MARK: - Essential Methods
@@ -52,18 +52,18 @@ class Thought {
         self.modifiedDate = Date()
     }
     
-    func addTag(_ tag: String) {
-        let cleanTag = tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        if !cleanTag.isEmpty && !tags.contains(cleanTag) {
-            tags.append(cleanTag)
-            updateModifiedDate()
-        }
-    }
+//    func addTag(_ tag: String) {
+//        let cleanTag = tag.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+//        if !cleanTag.isEmpty && !tagsId.contains(cleanTag) {
+//            tagsId.append(cleanTag)
+//            updateModifiedDate()
+//        }
+//    }
     
-    func removeTag(_ tag: String) {
-        tags.removeAll { $0 == tag }
-        updateModifiedDate()
-    }
+//    func removeTag(_ tag: String) {
+//        tags.removeAll { $0 == tag }
+//        updateModifiedDate()
+//    }
     
     func toggleFavorite() {
         isFavorite.toggle()

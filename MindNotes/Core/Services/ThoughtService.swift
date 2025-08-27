@@ -9,7 +9,6 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-
 class ThoughtService: ObservableObject {
     
     private var context: ModelContext
@@ -18,13 +17,14 @@ class ThoughtService: ObservableObject {
         self.context = context
     }
     
+    // MARK: - CRUD
+    
     func saveThought(_ draft: ThoughtDraft, notes: String) throws {
         let trimmedContent = draft.content.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !trimmedContent.isEmpty else {
-            //throw ThoughtError.emptyContent
-            return 
+            return
         }
         
         let newThought = Thought(
@@ -33,21 +33,18 @@ class ThoughtService: ObservableObject {
             tags: draft.tags,
             shouldRemind: draft.shouldRemind,
             reminderDate: draft.shouldRemind ? draft.reminderDate : nil,
-            journey: draft.journey
+            chapter: draft.chapter
         )
         
-        // Definir data de criação se especificada
         if draft.createdDate != Date() {
             newThought.createdDate = draft.createdDate
         }
         
         newThought.isFavorite = draft.isFavorite
         
-        
         context.insert(newThought)
         try context.save()
     }
-    
     
     func deleteThought(_ thought: Thought) throws {
         context.delete(thought)
@@ -57,12 +54,15 @@ class ThoughtService: ObservableObject {
     func toggleFavorite(_ thought: Thought) throws {
         thought.isFavorite.toggle()
         thought.updateModifiedDate()
+        try context.save()
     }
     
     func updateThought(_ thought: Thought) throws {
+        thought.updateModifiedDate()
         try context.save()
-        
     }
+    
+    // MARK: - Share
     
     func shareThought(_ thought: Thought) -> String {
         let formatter = DateFormatter()
@@ -71,17 +71,15 @@ class ThoughtService: ObservableObject {
         formatter.locale = Locale(identifier: "pt_BR")
         
         let shareText = """
-           💭 \(thought.content)
-           
-           \(thought.notes ?? "")
-           
-           📅 \(formatter.string(from: thought.createdDate))
-           """
+        💭 \(thought.content)
+        
+        \(thought.notes ?? "")
+        
+        📅 \(formatter.string(from: thought.createdDate))
+        """
         
         return shareText
     }
-    
-    
     
     // MARK: - Search and Filter
     
@@ -90,19 +88,16 @@ class ThoughtService: ObservableObject {
         
         return thoughts.filter { thought in
             thought.content.localizedCaseInsensitiveContains(query) ||
-            thought.notes?.localizedCaseInsensitiveContains(query) == true ||
-            thought.tags.contains { $0.localizedCaseInsensitiveContains(query) }
+            thought.notes?.localizedCaseInsensitiveContains(query) == true
         }
     }
     
     func filterThoughts(_ thoughts: [Thought], searchText: String) -> [Thought] {
         let filtered = searchThoughts(searchText, in: thoughts)
-        
-        // Ordenar por data de modificação (mais recente primeiro)
         return filtered.sorted { $0.modifiedDate > $1.modifiedDate }
     }
     
-    // MARK: - Query Methods
+    // MARK: - Core Fetcher
     
     private func fetch(predicate: Predicate<Thought>? = nil, sortBy: [SortDescriptor<Thought>] = []) throws -> [Thought] {
         let descriptor = FetchDescriptor<Thought>(
@@ -112,6 +107,8 @@ class ThoughtService: ObservableObject {
         return try context.fetch(descriptor)
     }
     
+    // MARK: - Query Methods
+    
     func fetchAllThoughts() throws -> [Thought] {
         let sortDescriptor = SortDescriptor(\Thought.modifiedDate, order: .reverse)
         return try fetch(sortBy: [sortDescriptor])
@@ -120,7 +117,7 @@ class ThoughtService: ObservableObject {
     func fetchThoughts(for journey: Journey) throws -> [Thought] {
         let journeyID = journey.id
         let predicate = #Predicate<Thought> { thought in
-            thought.journey != nil && thought.journey!.id == journeyID
+            thought.chapter != nil && thought.chapter!.id == journeyID
         }
         let sortDescriptor = SortDescriptor(\Thought.modifiedDate, order: .reverse)
         return try fetch(predicate: predicate, sortBy: [sortDescriptor])
@@ -129,6 +126,23 @@ class ThoughtService: ObservableObject {
     func fetchFavoriteThoughts() throws -> [Thought] {
         let predicate = #Predicate<Thought> { $0.isFavorite == true }
         let sortDescriptor = SortDescriptor(\Thought.modifiedDate, order: .reverse)
+        return try fetch(predicate: predicate, sortBy: [sortDescriptor])
+    }
+    
+    func fetchRecentThoughts() throws -> [Thought] {
+        let sortDescriptor = SortDescriptor(\Thought.modifiedDate, order: .reverse)
+        let descriptor = FetchDescriptor<Thought>(
+            sortBy: [sortDescriptor]
+           
+        )
+        return try context.fetch(descriptor)
+    }
+    
+    func fetchThoughtsWithReminders() throws -> [Thought] {
+        let predicate = #Predicate<Thought> { thought in
+            thought.shouldRemind == true && thought.reminderDate != nil
+        }
+        let sortDescriptor = SortDescriptor(\Thought.reminderDate, order: .forward)
         return try fetch(predicate: predicate, sortBy: [sortDescriptor])
     }
 }

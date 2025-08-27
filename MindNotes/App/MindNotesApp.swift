@@ -30,8 +30,6 @@ struct MindNotesApp: App {
     
     // Onboarding @AppStorage...
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome: Bool = false
-
-    @Namespace private var thoughtNamespace
     
     init() {
         let modelContext = sharedModelContainer.mainContext
@@ -46,7 +44,7 @@ struct MindNotesApp: App {
                 .environmentObject(thoughtService)
                 .environmentObject(journeyService)
         }
-        .modelContainer(for: [Journey.self, Thought.self])
+        .modelContainer(sharedModelContainer)
         
         //            .sheet(isPresented: $showingWelcome) {
         //                WelcomeView()
