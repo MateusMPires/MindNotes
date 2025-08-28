@@ -141,7 +141,7 @@ struct ChaptersGalleryView: View {
                             chapterIcon: journey.icon,
                             chapterHex: journey.colorHex,
                             chapterStartDate: journey.createdDate,
-                            thoughts: try! thoughtService.fetchThoughts(for: journey)
+                            thoughts: journey.thoughts ?? []
                         )
                         
                     case .filtered(let filter):
