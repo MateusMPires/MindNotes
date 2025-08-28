@@ -51,6 +51,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D018CE4F2E5FE1330032E5AB /* MindNotesWidget-ExtensionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "MindNotesWidget-ExtensionExtension.entitlements"; sourceTree = "<group>"; };
 		D071DD772E48229E00265FA4 /* MindNotesWidget-ExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "MindNotesWidget-ExtensionExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D071DD792E48229E00265FA4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D071DD7B2E48229E00265FA4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -70,6 +71,10 @@
 		D071DE192E4C10C500265FA4 /* Exceptions for "MindNotes" folder in "MindNotesWidget-ExtensionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/Models/Journey.swift,
+				Core/Models/Schema.swift,
+				Core/Models/Tag.swift,
+				Core/Models/Thought.swift,
 				"Utilities/Fonts/Manrope-Medium.ttf",
 				"Utilities/Fonts/Manrope-Regular.ttf",
 				"Utilities/Fonts/Outfit-Medium.ttf",
@@ -162,6 +167,7 @@
 		D081A5832E2687FF002F43C7 = {
 			isa = PBXGroup;
 			children = (
+				D018CE4F2E5FE1330032E5AB /* MindNotesWidget-ExtensionExtension.entitlements */,
 				D081A58E2E2687FF002F43C7 /* MindNotes */,
 				D081A5A02E268801002F43C7 /* MindNotesTests */,
 				D081A5AA2E268801002F43C7 /* MindNotesUITests */,
@@ -411,6 +417,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "MindNotesWidget-ExtensionExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GTH77F75XH;
@@ -440,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "MindNotesWidget-ExtensionExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GTH77F75XH;
@@ -613,11 +621,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mateus.MindNotes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
@@ -656,11 +664,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = mateus.MindNotes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,7";
+				TARGETED_DEVICE_FAMILY = 1;
 				XROS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;

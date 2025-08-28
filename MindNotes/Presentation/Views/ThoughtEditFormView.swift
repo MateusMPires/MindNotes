@@ -136,9 +136,7 @@ struct ThoughtEditFormView: View {
         thoughtToEdit.createdDate = draft.createdDate
         thoughtToEdit.isFavorite = draft.isFavorite
         thoughtToEdit.chapter = draft.chapter
-        
-        
-        
+                
         do {
             try context.save()
         } catch {

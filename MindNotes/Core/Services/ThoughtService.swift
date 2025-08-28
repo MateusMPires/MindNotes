@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import WidgetKit
 
 class ThoughtService: ObservableObject {
     
@@ -15,8 +16,56 @@ class ThoughtService: ObservableObject {
     
     init(context: ModelContext) {
         self.context = context
+        
+        self.updateEcoPhraseIfNeeded()
     }
     
+    // Widget UserDefaults...
+    private let userDefaults = UserDefaults(suiteName: "group.mindNotes")
+    private let ecoPhraseKey = "ecoPhrase"
+    private let lastUpdatedKey = "ecoPhraseLastUpdated"
+    
+       // Salva uma nova frase caso tenha passado 1h
+       func updateEcoPhraseIfNeeded() {
+           let now = Date()
+           
+           // pega a última atualização
+           let lastUpdated = userDefaults?.object(forKey: lastUpdatedKey) as? Date ?? .distantPast
+           
+           // só atualiza se passou 1h
+           if now.timeIntervalSince(lastUpdated) >= 2 {
+               if let newPhrase = pickRandomEcoPhrase() {
+                   userDefaults?.set(newPhrase, forKey: ecoPhraseKey)
+                   userDefaults?.set(now, forKey: lastUpdatedKey)
+                   userDefaults?.synchronize()
+               }
+           }
+           
+           WidgetCenter.shared.reloadTimelines(ofKind: "Echo_Widget")
+
+       }
+
+    // Método que escolhe uma frase de eco qualquer direto do banco
+    private func pickRandomEcoPhrase() -> String? {
+        do {
+            // Cria o container do SwiftData (mesmo schema do app principal)
+
+            // Faz um fetch de todos os pensamentos que têm shouldRemind = true
+            let descriptor = FetchDescriptor<Thought>(
+                predicate: #Predicate { $0.shouldRemind == true }
+            )
+
+            let ecos = try context.fetch(descriptor)
+
+            // Pega um aleatório
+            return ecos.randomElement()?.content
+
+        } catch {
+            print("Erro ao buscar ecos: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - CRUD
     
     func saveThought(_ draft: ThoughtDraft, notes: String) throws {
@@ -44,6 +93,11 @@ class ThoughtService: ObservableObject {
         
         context.insert(newThought)
         try context.save()
+        
+        StreakManager.shared.registerEntry()
+        
+        WidgetCenter.shared.reloadTimelines(ofKind: "Echo_Widget")
+
     }
     
     func deleteThought(_ thought: Thought) throws {
