@@ -19,7 +19,7 @@ struct DesignTokens {
         static let primary = Color(hex: "#061A21")
         static let secondaryText = Color(hex: "#404040")
         static let tag = Color(hex: "#112F3A").opacity(0.5)
-        static let accent = Color.yellow
+        static let accent = Color.accentColor
         static let notification = Color.orange
     }
     

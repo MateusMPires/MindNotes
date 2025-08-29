@@ -19,20 +19,14 @@ class JourneyService: ObservableObject {
     
     
     func saveJourney(title: String,
-                        notes: String? = nil,
+                        notes: String?,
                         icon: String,
-                        color: Color,
-                     journey: Journey? = nil) {
+                        color: Color
+                     ) {
         
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if let journey = journey {
-            // Edita jornada existente
-            journey.title = trimmedTitle
-            journey.notes = notes
-            journey.icon = icon
-            journey.colorHex = color.toHex()
-        } else {
+       
             // Cria nova jornada
             let newJourney = Journey(
                 title: trimmedTitle,
@@ -41,7 +35,17 @@ class JourneyService: ObservableObject {
                 colorHex: color.toHex()
             )
             context.insert(newJourney)
+        
+        
+        // Salva no contexto
+        do {
+            try context.save()
+        } catch {
+            print("Erro ao salvar jornada: \(error)")
         }
+    }
+    
+    func editJourney(_ journey: Journey) {
         
         // Salva no contexto
         do {

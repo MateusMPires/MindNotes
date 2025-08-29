@@ -35,15 +35,24 @@ enum FilteredChapter: Hashable {
         switch self {
         case .recents: return "clock.fill"
         case .favorites: return "star.fill"
-        case .echoes: return "bell.fill"
+        case .echoes: return "wave.3.right.circle.fill"
         }
     }
     
     var colorHex: String {
         switch self {
-        case .recents: return "#061A21"
-        case .favorites: return "#061A21"
-        case .echoes: return "#061A21"
+        case .recents: return "#488D84"
+        case .favorites: return "#488D84"
+        case .echoes: return "#488D84"
+        }
+    }
+    
+    
+    var isArchived: Bool {
+        switch self {
+        case .recents: return false
+        case .favorites: return false
+        case .echoes: return false
         }
     }
 }

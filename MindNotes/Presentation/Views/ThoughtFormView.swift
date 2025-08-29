@@ -37,7 +37,8 @@ struct ThoughtFormView: View {
         NavigationStack {
             ZStack {
                 // Background
-                AppBackground()
+                //AppBackground()
+                Color.accent.ignoresSafeArea()
                
                 VStack(spacing: 60) {
                     // Header com ícone que faz transição
@@ -71,23 +72,6 @@ struct ThoughtFormView: View {
                 
                 Spacer()
                 
-                // Ícone que faz a transição
-                ZStack {
-                    Image(imageButton)
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .matchedTransitionSource(id: imageButton, in: transitionNamespace)
-                    
-                    // Ícone no centro
-                    Image(systemName: "leaf")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                        .hidden()
-                }
-               
-                
-                Spacer()
-                
                 Button("Criar") {
                     // Haptic feedback antes de executar onSave
                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -95,7 +79,6 @@ struct ThoughtFormView: View {
                     
                     let notificationFeedback = UINotificationFeedbackGenerator()
                     notificationFeedback.notificationOccurred(.success)
-                    
 
                     saveThought()
                 }
@@ -139,12 +122,17 @@ struct ThoughtFormView: View {
                     Divider()
                     
                     Picker("Jornada", selection: $draft.chapter) {
-                        Text("Minha Mente")
-                            .tag(nil as Journey?)
-                        
                         ForEach(journeys, id: \.self) { journey in
-                            Text("\(journey.icon) \(journey.title)")
-                                .tag(journey as Journey?)
+                            HStack {
+                                Image("\(journey.icon)")
+                                    .background { Color(hex: journey.colorHex)}
+                                    .padding(6)
+                                    .clipShape(Circle())
+                                
+                                Text("\(journey.title)")
+                                    .font(DesignTokens.Typography.body)
+                            }
+                            .tag(journey as Journey?)
                         }
                     }
                     .pickerStyle(.navigationLink)
@@ -165,6 +153,7 @@ struct ThoughtFormView: View {
                     OtherView(draft: $draft) {
                         saveThought()
                     }
+                    
                 } label: {
                     HStack {
                         Text("Detalhes")
@@ -203,6 +192,8 @@ struct ThoughtFormView: View {
 }
 
 struct OtherView: View {
+    
+    @Environment(\.dismiss) var dismiss
     
     @Binding var draft: ThoughtDraft
     @State private var newTag: String = ""
@@ -270,57 +261,57 @@ struct OtherView: View {
 //                        }
 //                    }
 //                    
-//                    // Date Section
-//                    VStack(alignment: .leading, spacing: 12) {
-//                        Text("Data e Hora")
-//                            .font(.headline)
-//                        
-//                        DatePicker("", selection: $draft.createdDate, in: ...Date(), displayedComponents: [.date])
-//                            .datePickerStyle(.graphical)
-//                            .padding()
-//                            .background {
-//                                RoundedRectangle(cornerRadius: 12)
-//                                    .fill(.white.opacity(0.05))
-//                            }
-//                    }
-//                    
-//                    // Reminder Section
-//                    VStack(alignment: .leading, spacing: 12) {
-//                        Toggle(isOn: $draft.shouldRemind) {
-//                            Label("Lembrete futuro", systemImage: "bell.fill")
-//                                .foregroundStyle(.orange)
-//                        }
-//                        .padding()
-//                        .background {
-//                            RoundedRectangle(cornerRadius: 12)
-//                                .fill(.white.opacity(0.05))
-//                        }
-//                        
-//                        if draft.shouldRemind {
-//                            DatePicker("Lembrar em", selection: $draft.reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-//                                .datePickerStyle(.compact)
-//                                .padding()
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 12)
-//                                        .fill(.white.opacity(0.05))
-//                                }
-//                            
-//                            Text("Você receberá uma notificação para relembrar este pensamento.")
-//                                .font(.caption)
-//                                .foregroundColor(.secondary)
-//                        }
-//                    }
-//                    
-//                    // Favorite Section
-//                    Toggle(isOn: $draft.isFavorite) {
-//                        Label("Favorito", systemImage: "star.fill")
-//                            .foregroundStyle(.yellow)
-//                    }
-//                    .padding()
-//                    .background {
-//                        RoundedRectangle(cornerRadius: 12)
-//                            .fill(.white.opacity(0.05))
-//                    }
+                    // Date Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Data e Hora")
+                            .font(.headline)
+                        
+                        DatePicker("", selection: $draft.createdDate, in: ...Date(), displayedComponents: [.date])
+                            .datePickerStyle(.graphical)
+                            .padding()
+                            .background {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.white.opacity(0.05))
+                            }
+                    }
+
+                    // Reminder Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Toggle(isOn: $draft.shouldRemind) {
+                            Label("Lembrete futuro", systemImage: "bell.fill")
+                                .foregroundStyle(.orange)
+                        }
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.white.opacity(0.05))
+                        }
+                        
+                        if draft.shouldRemind {
+                            DatePicker("Lembrar em", selection: $draft.reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                                .datePickerStyle(.compact)
+                                .padding()
+                                .background {
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(.white.opacity(0.05))
+                                }
+                            
+                            Text("Você receberá uma notificação para relembrar este pensamento.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    // Favorite Section
+                    Toggle(isOn: $draft.isFavorite) {
+                        Label("Favorito", systemImage: "star.fill")
+                            .foregroundStyle(.yellow)
+                    }
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.white.opacity(0.05))
+                    }
                 }
                 .padding()
             }
@@ -338,6 +329,8 @@ struct OtherView: View {
                     notificationFeedback.notificationOccurred(.success)
                     
                     onSave?()
+                    dismiss()
+                    
                 } label: {
                     Text("Criar")
                 }

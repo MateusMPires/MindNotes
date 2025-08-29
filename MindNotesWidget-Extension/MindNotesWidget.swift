@@ -54,7 +54,6 @@ struct MindNotesWidgetView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .widgetURL(URL(string: "mindnotes://open-app"))
         .foregroundColor(Color("PrimaryColor"))
         .containerBackground(for: .widget) {
             Color.white

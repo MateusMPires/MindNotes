@@ -10,6 +10,7 @@ import SwiftUI
 struct ThoughtRowView: View {
     
     let thought: Thought
+    let showBanner: Bool
     
     var body: some View {
         
@@ -23,6 +24,8 @@ struct ThoughtRowView: View {
                     VStack {
                         RoundedRectangle(cornerRadius: 12)
                             .frame(width: 4, height: 12)
+                            .foregroundStyle(Color(hex: thought.chapter?.colorHex ?? "488D84"))
+                            .opacity(showBanner ? 1 : 0)
                     
                         Spacer()
                     }
@@ -61,8 +64,8 @@ struct ThoughtRowView: View {
                                 }
                                 
                                 if thought.shouldRemind {
-                                    Image(systemName: "bell.fill")
-                                        .foregroundColor(.orange)
+                                    Image(systemName: "wave.3.right")
+                                        .foregroundColor(DesignTokens.Colors.primary)
                                         .font(.caption2)
                                 }
                             }
@@ -83,12 +86,12 @@ struct ThoughtRowView: View {
 //        .background {
 //            TransparentBlurView(removeAllFilters: true)
 //                .blur(radius: 9, opaque: true)
-//                .background(.white.opacity(0.05))
+//                .background(.white.opacity(thought.isFavorite ? 0.2 : 0))
 //        }
 //        .clipShape(.rect(cornerRadius: 12, style: .continuous))
 //        .background {
 //            RoundedRectangle(cornerRadius: 12, style: .continuous)
-//                .stroke(.white.opacity(0.3), lineWidth: 1)
+//                .stroke(.white.opacity(thought.isFavorite ? 0.5 : 0), lineWidth: 1)
 //        }
     }
 }

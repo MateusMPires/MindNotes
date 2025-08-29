@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var animateGradient: Bool = false
     @State private var isBubbling: Bool = false
     
+    @State private var position = ScrollPosition()
+    
     // Namespace para transição
     @Namespace private var transitionNamespace
     
@@ -38,7 +40,7 @@ struct ContentView: View {
                 AppBackground()
                 
                 ScrollView {
-                   VStack(alignment: .center, spacing: 160) {
+                   LazyVStack(alignment: .center, spacing: 160) {
                         headerView
                        
                         addThoughtButton
@@ -47,8 +49,11 @@ struct ContentView: View {
                            recentsSection
                        }
                     }
+                   .scrollTargetLayout()
                 }
+             
             }
+            .defaultScrollAnchor(.top)
             .navigationDestination(item: $selectedThought) { thought in
                 ThoughtDetailedView(thought: thought)
             }
@@ -70,20 +75,9 @@ struct ContentView: View {
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 0) {
-                
-                Button {
-                    withAnimation(.easeInOut) { showJourneys = true }
-                } label: {
-                    Image(systemName: "tray.circle.fill")
-                        .font(.system(size: 32))
-                        .symbolRenderingMode(.hierarchical)
-                }
-                .hidden()
-                
-                Spacer()
-                
+
                 VStack(spacing: 6) {
-                    Text("echos.")
+                    Text("ecos.")
                         .font(DesignTokens.Typography.title)
                         .foregroundStyle(DesignTokens.Colors.primary)
                         .multilineTextAlignment(.center)
@@ -93,18 +87,7 @@ struct ContentView: View {
                         .foregroundStyle(DesignTokens.Colors.secondaryText)
                 }
                 .padding(.horizontal)
-                
-                Spacer()
 
-                Button {
-                    withAnimation(.easeInOut) { showJourneys = true }
-                } label: {
-                    Image(systemName: "brain.fill")
-                        .font(.system(size: 20))
-                        .symbolRenderingMode(.hierarchical)
-                }
-                .padding(.bottom)
-                .hidden()
             }
 
         }
@@ -118,33 +101,22 @@ struct ContentView: View {
                 addNewThought = true
             }
         } label: {
-            ZStack {
-                Image(imageButton)
-                    .resizable()
-                    .frame(width: 60, height: 60)
-                    .matchedTransitionSource(id: imageButton, in: transitionNamespace)
-
-                // Ícone no centro
-                Image(systemName: "leaf")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
-                    .hidden()
-            }
-           
+            PulseButtonView()
+                .frame(width: 60, height: 60)
         }
     }
     
     private var recentsSection: some View {
             VStack(alignment: .center, spacing: 24) {
-                Text("Recentes")
-                    .font(DesignTokens.Typography.caption)
-                    .foregroundStyle(DesignTokens.Colors.secondaryText)
+                Text("recentes")
+                    .font(DesignTokens.Typography.tag)
+                    .foregroundStyle(.tertiary)
                 
                 ForEach(thoughts.prefix(3), id: \.id) { thought in
                     Button {
                         selectedThought = thought
                     } label: {
-                        ThoughtRowView(thought: thought)
+                        ThoughtRowView(thought: thought, showBanner: true)
                             .id(thought.id)
                             .transition(.asymmetric(
                                 insertion: .move(edge: .trailing).combined(with: .opacity),
@@ -160,11 +132,12 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: "bookmark.fill")
                         .foregroundStyle(.accent)
-                        .padding(10)
-                        .background {
-                            Circle()
-                                .stroke(.accent, style: StrokeStyle(lineWidth: 2))
-                        }
+                        .font(.system(size: 20))
+                        //.padding(10)
+//                        .background {
+//                            Circle()
+//                                .stroke(.accent, style: StrokeStyle(lineWidth: 2))
+//                        }
                         
                 }
                 .padding(.vertical, 16)

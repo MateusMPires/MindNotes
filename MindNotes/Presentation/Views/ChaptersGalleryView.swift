@@ -12,7 +12,8 @@ struct ChaptersGalleryView: View {
     // Navigation...
     @State private var showingArchived = false
     @State private var openJourneyForm: Bool = false
-
+    @State private var chapterToEdit: Journey? = nil
+    
     @Binding var showJourneyView: Bool
     
     
@@ -44,11 +45,17 @@ struct ChaptersGalleryView: View {
                         // Chapters...
                         VStack(spacing: 60) {
                             
-                            Text("Capítulos.")
-                                .font(DesignTokens.Typography.title)
-                                .textCase(.lowercase)
-                                .foregroundStyle(DesignTokens.Colors.primary)
-                            
+                            VStack(spacing: 12){
+                                
+//                                Image(systemName: "bookmark.fill")
+//                                    .font(.system(size: 32))
+//                                    .foregroundStyle(Color.accentColor)
+                                
+                                Text("Capítulos.")
+                                    .font(DesignTokens.Typography.title)
+                                    .textCase(.lowercase)
+                                    .foregroundStyle(DesignTokens.Colors.primary)
+                            }
                             VStack(spacing: 18) {
                                 // General Chapters...
                                 generalChaptersView
@@ -94,11 +101,14 @@ struct ChaptersGalleryView: View {
                     
                     // Trailing toolbar item
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        IconButton(
-                            iconName: "xmark.circle.fill",
-                            size: 20
-                        ) {
-                            
+                       
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 20))
+                                .symbolRenderingMode(.hierarchical)
+
                         }
                     }
                     
@@ -117,21 +127,25 @@ struct ChaptersGalleryView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $openJourneyForm) {
+                .fullScreenCover(item: $chapterToEdit) { _ in
+                    ChapterFormView(journey: chapterToEdit, onJourneyEdited:  { journey in
+                        
+                        // Se tiver uma jornada selecionada, será edição
+                        journeyService.editJourney(journey)
+                    })
+                }
+                .fullScreenCover(isPresented: $openJourneyForm) {
                     ChapterFormView(journey: nil) { title, notes, icon, color in
                         
                         // Se tiver uma jornada selecionada, será edição
                         journeyService.saveJourney(
-                            title: title,
+                            title: title!,
                             notes: notes,
-                            icon: icon,
-                            color: color,
-                            journey: nil
+                            icon: icon!,
+                            color: color!
                         )
                     }
                 }
-
-                
                 .navigationDestination(for: ChapterRoute.self) { route in
                     switch route {
                     case .journey(let journey):
@@ -141,8 +155,16 @@ struct ChaptersGalleryView: View {
                             chapterIcon: journey.icon,
                             chapterHex: journey.colorHex,
                             chapterStartDate: journey.createdDate,
-                            thoughts: journey.thoughts ?? []
-                        )
+                            isArchived: journey.isArchived,
+                            thoughts: journey.thoughts ?? [],
+                            showBanner: false
+                            ,  onEdit:  {
+                                chapterToEdit = journey
+                            }, onArchive: {
+                                journeyService.archiveJourney(journey)
+                            }, onDelete: {
+                                journeyService.deleteJourney(journey)
+                            })
                         
                     case .filtered(let filter):
                         switch filter {
@@ -153,7 +175,9 @@ struct ChaptersGalleryView: View {
                                 chapterIcon: filter.icon,
                                 chapterHex: filter.colorHex,
                                 chapterStartDate: Date(),
-                                thoughts: try! thoughtService.fetchRecentThoughts()
+                                isArchived: filter.isArchived,
+                                thoughts: try! thoughtService.fetchRecentThoughts(),
+                                showBanner: true
                             )
                         case .favorites:
                             ChapterDetailedView(
@@ -162,7 +186,10 @@ struct ChaptersGalleryView: View {
                                 chapterIcon: filter.icon,
                                 chapterHex: filter.colorHex,
                                 chapterStartDate: Date(),
-                                thoughts: try! thoughtService.fetchFavoriteThoughts()
+                                isArchived: filter.isArchived,
+                                thoughts: try! thoughtService.fetchFavoriteThoughts(),
+                                showBanner: true
+
                             )
                         case .echoes:
                             ChapterDetailedView(
@@ -171,7 +198,10 @@ struct ChaptersGalleryView: View {
                                 chapterIcon: filter.icon,
                                 chapterHex: filter.colorHex,
                                 chapterStartDate: Date(),
-                                thoughts: try! thoughtService.fetchThoughtsWithReminders()
+                                isArchived: filter.isArchived,
+                                thoughts: try! thoughtService.fetchThoughtsWithReminders(),
+                                showBanner: true
+
                             )
                         }
                     }
@@ -191,7 +221,7 @@ extension ChaptersGalleryView {
                         title: chapter.title,
                         color: chapter.colorHex,
                         icon: chapter.icon,
-                        thoughtsCount: 2 // ← pode calcular depois
+                        thoughtsCount: 0 // ← pode calcular depois
                     )
                 }
             }

@@ -17,26 +17,32 @@ struct ChapterDetailedView: View {
     // View...
     @Environment(\.dismiss) private var dismiss
 
-    // Closures que são resolvidas pela GalleryView
-    var onArchive: (() -> Void)?
-    
-    var onDelete: (() -> Void)?
-    
-    var onEdit: (() -> Void)?
-
     // Info...
     let chapterTitle: String
     let chapterDescription: String?
     let chapterIcon: String
     let chapterHex: String
     let chapterStartDate: Date?
-    
+    let isArchived: Bool
     let thoughts: [Thought]
-       
+    let showBanner: Bool
+    
+    // Closures que são resolvidas pela GalleryView
+    var onEdit: (() -> Void)?
+    
+    var onArchive: (() -> Void)?
+    
+    var onDelete: (() -> Void)?
+    
+    
     // Searching...
      @State private var searchText = ""
      @State private var selectedThought: Thought?
      @State private var showingTagFilter = false
+
+    // Confirmation dialogs
+       @State private var showingArchiveConfirmation = false
+       @State private var showingDeleteConfirmation = false
 
      
      private var isEmpty: Bool {
@@ -48,25 +54,97 @@ struct ChapterDetailedView: View {
              
              AppBackground()
              
-             Group {
-                 if isEmpty && searchText.isEmpty {
-                     emptyStateView
-                 } else {
-                     thoughtListContent
+             VStack {
+                 
+                 VStack(spacing: 8){
+//                     Circle()
+//                         .frame(width: 32, height: 32)
+//                         .foregroundStyle(Color(hex: chapterHex))
+                     
+                     Image(systemName: chapterIcon)
+                         .font(.system(size: 16))
+                         .foregroundStyle(.white)
+                         .padding(10)
+                         //.frame(width: 32, height: 32)
+                         .background(Color(hex: chapterHex))
+                         .clipShape(Circle())
+                     
+                     VStack(spacing: 4){
+                         Text("\(chapterTitle).")
+                             .textCase(.lowercase)
+                             .font(DesignTokens.Typography.title)
+                         
+                         Text("criado em 25 ago 2025")
+                             .font(DesignTokens.Typography.caption)
+                             .foregroundStyle(.secondary)
+                     }
+                 }
+                 
+                 Group {
+                     if isEmpty && searchText.isEmpty {
+                         emptyStateView
+                     } else {
+                         thoughtListContent
+                     }
                  }
              }
              .navigationDestination(item: $selectedThought) { thought in
                  ThoughtDetailedView(thought: thought)
              }
-             .navigationTitle(chapterTitle)
-             .navigationBarTitleDisplayMode(.inline)
-             .searchable(text: $searchText, prompt: "Buscar pensamentos...")
+             .navigationBarBackButtonHidden()
+             //.searchable(text: $searchText, prompt: "Buscar pensamentos...")
              .toolbar {
                  toolbarContent
              }
              .sheet(isPresented: $showingTagFilter) {
                  TagFilterView()
              }
+             .confirmationDialog(
+                  isArchived ? "Desarquivar Capítulo" : "Arquivar Capítulo",
+                  isPresented: $showingArchiveConfirmation,
+                  titleVisibility: .visible
+              ) {
+                  Button(isArchived ? "Desarquivar" : "Arquivar") {
+                      onArchive?()
+                      dismiss()
+                  }
+                  
+                  Button("Cancelar", role: .cancel) { }
+              } message: {
+                  Text(isArchived ?
+                      "Este capítulo voltará a aparecer na lista principal." :
+                      "Este capítulo será movido para os arquivados e ficará oculto."
+                  )
+              }
+              
+              .confirmationDialog(
+                  "Excluir Capítulo",
+                  isPresented: $showingDeleteConfirmation,
+                  titleVisibility: .visible
+              ) {
+                  Button("Excluir", role: .destructive) {
+                      onDelete?()
+                      dismiss()
+                  }
+                  
+                  Button("Cancelar", role: .cancel) { }
+              } message: {
+                  Text("Esta ação não pode ser desfeita. Todos os pensamentos deste capítulo serão permanentemente excluídos.")
+              }
+         }
+         .tint(Color(hex: chapterHex))
+         .onAppear {
+             let appearance = UINavigationBarAppearance()
+             
+             // Cor dos botões (incluindo o botão de voltar)
+             appearance.buttonAppearance.normal.titleTextAttributes = [.foregroundColor: Color(hex: chapterHex)]
+             
+             // Cor da seta de voltar
+             UINavigationBar.appearance().tintColor = UIColor(Color(hex: chapterHex))
+         }
+         .onDisappear {
+             // Restaurar as cores padrão
+             UINavigationBar.appearance().tintColor = nil
          }
      }
      
@@ -89,18 +167,10 @@ struct ChapterDetailedView: View {
          Section {
              LazyVStack {
                  ForEach(thoughts) { thought in
-//                     Button {
-//                         selectedThought = thought
-//                     } label: {
-//                         ThoughtRowView(thought: thought)
-                     //                             .padding()
-                     //                     }
-                     
                      Button {
                          selectedThought = thought
                      } label: {
-                         ThoughtRowView(thought: thought)
-                             .padding()
+                         ThoughtRowView(thought: thought, showBanner: showBanner)
                      }
                      .buttonStyle(PlainButtonStyle())
                  }
@@ -143,22 +213,17 @@ struct ChapterDetailedView: View {
                  .foregroundColor(.gray)
              
              VStack(spacing: 8) {
-                 Text("Nenhum pensamento ainda")
+                 Text("Sem pensamentos ainda.")
                      .font(.title2)
                      .fontWeight(.medium)
                  
-                 Text("Comece adicionando seu primeiro pensamento")
+                 Text("Adicione um pensamento na tela de início")
                      .font(.callout)
                      .foregroundColor(.secondary)
                      .multilineTextAlignment(.center)
              }
-             
-             Button("Adicionar Pensamento") {
-                 //showingNewThought = true
-             }
-             .buttonStyle(.borderedProminent)
          }
-         .padding()
+         .padding(.bottom, 40)
          .frame(maxWidth: .infinity, maxHeight: .infinity)
      }
      
@@ -169,6 +234,19 @@ struct ChapterDetailedView: View {
              ToolbarItem(placement: .navigationBarTrailing) {
                  journeyMenuButton
              }
+         
+         ToolbarItem(placement: .navigation) {
+             Button {
+                dismiss()
+             } label: {
+                 HStack(spacing: 4) {
+                     Image(systemName: "chevron.left")
+                         .fontWeight(.medium)
+                     Text("Voltar")
+                 }
+             }
+             .font(.body)
+         }
         // }
          
 //         ToolbarItem(placement: .bottomBar) {
@@ -195,41 +273,36 @@ struct ChapterDetailedView: View {
                  .foregroundColor(.blue)
          }
      }
-     
-     private var journeyMenuButton: some View {
-         Menu {
-             Button {
-                 // Edit Journey
-             } label: {
-                 Label("Editar Jornada", systemImage: "pencil")
-             }
-             
-             Button {
-                 // Archive Journey
-                 //archiveJourney()
-             } label: {
-//                 Label(
-//                     journey?.isArchived == true ? "Desarquivar" : "Arquivar",
-//                     systemImage: "archivebox"
-//                 )
-             }
-             
-             Divider()
-             
-             Button(role: .destructive) {
-                 //deleteJourney()
-                 dismiss()
-
+    private var journeyMenuButton: some View {
+        Menu {
+            Button {
+                onEdit?()
+            } label: {
+                Label("Editar Capítulo", systemImage: "pencil")
+            }
             
-             } label: {
-                 Label("Excluir Jornada", systemImage: "trash")
-             }
-         } label: {
-             Image(systemName: "ellipsis.circle")
-                 .foregroundColor(.blue)
-         }
-     }
-     
+            Button {
+                showingArchiveConfirmation = true
+            } label: {
+                Label(
+                    isArchived ? "Desarquivar" : "Arquivar",
+                    systemImage: "archivebox"
+                )
+            }
+            
+            Divider()
+            
+            Button(role: .destructive) {
+                showingDeleteConfirmation = true
+            } label: {
+                Label("Excluir Capítulo", systemImage: "trash")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+        }
+    }
+    
+    
      private var addThoughtButton: some View {
          HStack {
              Button {
@@ -376,18 +449,18 @@ struct TagFilterRowView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: Thought.self, inMemory: true)
-}
 
 #Preview {
-    ChapterDetailedView(
-        chapterTitle: "Recentes",
-        chapterDescription: "a",
-        chapterIcon: "folder.fill",
-        chapterHex: "999999",
-        chapterStartDate: Date(),
-        thoughts: Thought.defaultThoughts
-    )
+    NavigationStack {
+        ChapterDetailedView(
+            chapterTitle: "Recentes",
+            chapterDescription: "a",
+            chapterIcon: "folder.fill",
+            chapterHex: "999999",
+            chapterStartDate: Date(),
+            isArchived: false, 
+            thoughts: Thought.defaultThoughts,
+            showBanner: false
+        )
+    }
 }

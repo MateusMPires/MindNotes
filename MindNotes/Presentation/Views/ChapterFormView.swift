@@ -15,10 +15,13 @@ struct ChapterFormView: View {
     
     // Closure onSave()
     // Closure que retorna todas as informações de uma Journey
-    var onJourneyCreated: ((_ title: String,
+    var onJourneyCreated: ((_ title: String?,
                             _ notes: String?,
-                            _ icon: String,
-                            _ color: Color) -> Void)?
+                            _ icon: String?,
+                            _ color: Color?
+                           ) -> Void)?
+
+    var onJourneyEdited: ((_ journey: Journey) -> Void)?
 
 
     @EnvironmentObject private var journeyService: JourneyService
@@ -137,7 +140,12 @@ struct ChapterFormView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? "Salvar" : "Criar") {
                     
-                        onJourneyCreated?(title, notes, selectedIcon, selectedColor)
+                        if isEditing {
+                            onJourneyEdited?(journey!)
+                        } else {
+                            onJourneyCreated?(title, notes, selectedIcon, selectedColor)
+                        }
+                      
                         
                         dismiss()
                     }
