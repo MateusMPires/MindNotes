@@ -30,7 +30,7 @@ struct JourneyRowComponent: View {
                 Text(title)
                     .textCase(.lowercase)
                     .font(DesignTokens.Typography.body)
-                    .tint(DesignTokens.Colors.primary)
+                    .tint(DesignTokens.Colors.primaryText)
                 
               
                 

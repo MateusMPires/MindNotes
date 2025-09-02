@@ -38,7 +38,7 @@ struct ThoughtRowView: View {
                         Text(thought.content)
                         //Text("Uma frase bem legal. E mais uma frase bem legal.")
                             .font(DesignTokens.Typography.body)
-                            .foregroundStyle(DesignTokens.Colors.primary)
+                            .foregroundStyle(DesignTokens.Colors.primaryText)
                             .multilineTextAlignment(.leading)
                         
                         // Tag...
@@ -51,6 +51,7 @@ struct ThoughtRowView: View {
                                 //.padding(.leading, 8)
                                 //.padding(.vertical, 3)
                                 .foregroundColor(DesignTokens.Colors.tag)
+                                
                             // }
                             // }
                             
@@ -59,13 +60,13 @@ struct ThoughtRowView: View {
                             VStack(alignment: .trailing, spacing: 4) {
                                 if thought.isFavorite {
                                     Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
+                                        .foregroundColor(DesignTokens.Colors.primaryText)
                                         .font(.caption)
                                 }
                                 
                                 if thought.shouldRemind {
                                     Image(systemName: "wave.3.right")
-                                        .foregroundColor(DesignTokens.Colors.primary)
+                                        .foregroundColor(DesignTokens.Colors.primaryText)
                                         .font(.caption2)
                                 }
                             }

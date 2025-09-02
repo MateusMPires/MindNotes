@@ -51,10 +51,10 @@ struct ChaptersGalleryView: View {
 //                                    .font(.system(size: 32))
 //                                    .foregroundStyle(Color.accentColor)
                                 
-                                Text("Capítulos.")
+                                Text("Ciclos.")
                                     .font(DesignTokens.Typography.title)
                                     .textCase(.lowercase)
-                                    .foregroundStyle(DesignTokens.Colors.primary)
+                                    .foregroundStyle(DesignTokens.Colors.primaryText)
                             }
                             VStack(spacing: 18) {
                                 // General Chapters...
@@ -120,7 +120,7 @@ struct ChaptersGalleryView: View {
                                     Image(systemName: "plus.circle.fill")
                                     Text("Adicionar capítulo")
                                 }
-                                .font(DesignTokens.Typography.subtitle)
+                                .font(.custom("Outfit-Medium", size: 16))
                             }
                             
                             Spacer()

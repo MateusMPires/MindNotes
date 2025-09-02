@@ -16,7 +16,9 @@ class Journey {
     var icon: String
     var colorHex: String
     var createdDate: Date
+    var endDate: Date?
     var isArchived: Bool
+    var overview: String?
     
     @Relationship(deleteRule: .cascade, inverse: \Thought.chapter)
     var thoughts: [Thought]?
@@ -28,8 +30,10 @@ class Journey {
         self.icon = icon
         self.colorHex = colorHex
         self.createdDate = Date()
+        self.endDate = nil
         self.isArchived = false
         self.thoughts = []
+        self.overview = nil
     }
     
     // MARK: - Essential Methods

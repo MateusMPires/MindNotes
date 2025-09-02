@@ -90,7 +90,7 @@ class Thought {
 // MARK: - Predefined Thoughts
 extension Thought {
     static let defaultThoughts = [
-        Thought(content: "Hello, World!"),
-        Thought(content: "Swift is awesome!")
+        Thought(content: "Hello, World!", createdDate: .distantPast),
+        Thought(content: "Swift is awesome!", createdDate: .now)
     ]
 }

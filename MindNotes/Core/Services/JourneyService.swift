@@ -17,6 +17,19 @@ class JourneyService: ObservableObject {
         self.context = context
     }
     
+    func fetchJourneys() -> [Journey] {
+        let descriptor = FetchDescriptor<Journey>(
+            sortBy: [SortDescriptor(\.title, order: .forward)]
+        )
+        
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            print("Erro ao buscar jornadas: \(error)")
+            return []
+        }
+    }
+
     
     func saveJourney(title: String,
                         notes: String?,

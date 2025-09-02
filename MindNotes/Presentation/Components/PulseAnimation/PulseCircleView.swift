@@ -11,11 +11,11 @@ struct PulseCircleView: View {
     @State private var startAnimation: Bool = false
     var body: some View {
         Image(systemName: "circle.fill")
-            .font(.system(size: 20))
+            .font(.system(size: 30))
             .foregroundStyle(.accent)
             .background(content: {
                 Image(systemName: "circle.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 30))
                     .foregroundStyle(.white)
                     .blur(radius: 2, opaque: false)
                     .scaleEffect(startAnimation ? 1.1 : 0)

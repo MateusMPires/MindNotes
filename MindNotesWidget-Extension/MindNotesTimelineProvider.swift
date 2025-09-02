@@ -13,8 +13,9 @@ struct MindNotesTimelineProvider: TimelineProvider {
     
     
     func getSnapshot(in context: Context, completion: @escaping (MindNotesTimelineEntry) -> ()) {
-       
-
+        let entry = MindNotesTimelineEntry(date: Date(), streak: 0)
+        completion(entry)
+        
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<MindNotesTimelineEntry>) -> ()) {

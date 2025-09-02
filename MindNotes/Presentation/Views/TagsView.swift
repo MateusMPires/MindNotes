@@ -8,6 +8,8 @@ struct TagsView: View {
     @State private var newTagTitle: String = ""
     @State private var selectedTags: Set<UUID> = []
     
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Retângulo com tags
@@ -35,6 +37,24 @@ struct TagsView: View {
             
             Spacer()
         }
+        .toolbar(content: {
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("OK")
+                }
+
+            }
+            ToolbarItem(placement: .cancellationAction) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("OK")
+                }
+
+            }
+        })
         .padding()
         .navigationTitle("Tags")
     }

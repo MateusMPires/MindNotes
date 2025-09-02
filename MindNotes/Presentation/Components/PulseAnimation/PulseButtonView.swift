@@ -17,7 +17,7 @@ struct PulseButtonView: View {
         VStack {
             ZStack {
                 if showPusles {
-                    TimelineView(.animation(minimumInterval: 0.7, paused: false)) { timeline in
+                    TimelineView(.animation(minimumInterval: 0.75, paused: false)) { timeline in
                         
                         /// Method 2
                         ZStack {
@@ -59,11 +59,11 @@ struct PulseButtonView: View {
                 }
                 
                 Image(systemName: "circle.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 30))
                     .foregroundStyle(.accent.gradient)
                     .symbolEffect(.bounce, options: !beatAnimation ? .default : .repeating.speed(0.5), value: beatAnimation)
             }
-            .frame(maxWidth: 60, maxHeight: 60)
+            .frame(maxWidth: 70, maxHeight: 70)
             .onAppear {
                 beatAnimation = true
             }
@@ -148,3 +148,8 @@ struct PulseButtonView: View {
     }
 }
 
+
+#Preview {
+    ContentView()
+        .modelContainer(for: [Journey.self, Thought.self], inMemory: true)
+}

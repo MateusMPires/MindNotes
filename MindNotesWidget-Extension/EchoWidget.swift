@@ -17,11 +17,11 @@ struct EchoEntry: TimelineEntry {
 // MARK: - Provider
 struct EchoProvider: TimelineProvider {
     func placeholder(in context: Context) -> EchoEntry {
-        EchoEntry(date: Date(), echo: "Frase eco...")
+        EchoEntry(date: Date(), echo: "Frase marcada como eco.")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (EchoEntry) -> ()) {
-        let entry = EchoEntry(date: Date(), echo: "Eco...")
+        let entry = EchoEntry(date: Date(), echo: "Frase marcada como eco.")
         completion(entry)
     }
     
@@ -30,7 +30,7 @@ struct EchoProvider: TimelineProvider {
         var entry: EchoEntry = EchoEntry(date: Date(), echo: "")
 
         if let userDefaults = UserDefaults(suiteName: "group.mindNotes") {
-            let echo = userDefaults.string(forKey: "ecoPhrase") ?? "Sem eco definido ainda"
+            let echo = userDefaults.string(forKey: "ecoPhrase") ?? "Sem eco definido ainda."
             let date = userDefaults.object(forKey: "ecoPhraseLastUpdated") as? Date ?? .distantPast
             
             entry.echo = echo
@@ -53,20 +53,36 @@ struct EchoWidgetView: View {
     var body: some View {
         
             VStack {
-                Text("eco")
-                    .font(.custom("Outfit-Medium", size: 12))
+                HStack {
+                    Text("ecos")
+                        .font(.custom("Outfit-Medium", size: 12))
+                    
+                    Image(systemName: "wave.3.right")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.accent)
+                    
+                    Spacer()
+                    
+                    Image("Button")
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                }
                 
                 Spacer()
                 
-                Text(entry.echo)
-                    .font(.custom("Manrope-Regular", size: 20))
-                    .lineLimit(3)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-
+                VStack(spacing: 8) {
+                    Text(entry.echo)
+                        .font(.custom("Manrope-SemiBold", size: 16))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    Text("11 de agosto")
+                        .font(.custom("Manrope-Regular", size: 10))
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
             }
-            //.padding()
             .containerBackground(for: .widget) {
                 Color.white
                 LinearGradient(
@@ -80,7 +96,6 @@ struct EchoWidgetView: View {
                         endPoint: .bottom
                     )
                 .opacity(0.1)
-                
             }
             .foregroundColor(Color("PrimaryColor"))
     }
@@ -107,5 +122,5 @@ struct EchoWidget: Widget {
 #Preview(as: .systemMedium) {
     EchoWidget()
 } timeline: {
-    EchoEntry(date: Date(), echo: "Uma frase que eu não posso esquecer.")
+    EchoEntry(date: Date(), echo: "Atenção é a forma máxima de respeito.")
 }

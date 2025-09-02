@@ -16,7 +16,7 @@ struct DesignTokens {
 
         static let cardBackground = Color.white.opacity(0.05)
         static let strokeColor = Color.white.opacity(0.3)
-        static let primary = Color(hex: "#061A21")
+        static let primaryText = Color(hex: "#061A21")
         static let secondaryText = Color(hex: "#404040")
         static let tag = Color(hex: "#112F3A").opacity(0.5)
         static let accent = Color.accentColor

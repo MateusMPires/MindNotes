@@ -54,7 +54,7 @@ struct ChapterDetailedView: View {
              
              AppBackground()
              
-             VStack {
+             VStack(spacing: 64) {
                  
                  VStack(spacing: 8){
 //                     Circle()
@@ -97,7 +97,7 @@ struct ChapterDetailedView: View {
                  toolbarContent
              }
              .sheet(isPresented: $showingTagFilter) {
-                 TagFilterView()
+                 TagsView()
              }
              .confirmationDialog(
                   isArchived ? "Desarquivar Capítulo" : "Arquivar Capítulo",
@@ -158,35 +158,42 @@ struct ChapterDetailedView: View {
                  noResultsSection
              }
          }
-         .listStyle(.plain)
+         .listStyle(.grouped)
+         .listRowInsets(EdgeInsets())
+         .scrollContentBackground(.hidden)
 
 
      }
      
-     private var thoughtsSection: some View {
-         Section {
-             LazyVStack {
-                 ForEach(thoughts) { thought in
-                     Button {
-                         selectedThought = thought
-                     } label: {
-                         ThoughtRowView(thought: thought, showBanner: showBanner)
-                     }
-                     .buttonStyle(PlainButtonStyle())
-                 }
-                 .padding(.vertical, 8)
-             }
-             .listRowBackground(Color.clear)
-             .listRowSeparator(Visibility.hidden, edges: .all)
-             
-         } header: {
-             if !searchText.isEmpty {
-                 Text("\(thoughts.count) resultado(s)")
-             } else {
-                 Text(sectionTitle)
-             }
-         }
-     }
+    private var thoughtsSection: some View {
+        ForEach(groupedThoughts, id: \.date) { group in
+            Section {
+                LazyVStack {
+                    ForEach(group.thoughts) { thought in
+                        Button {
+                            selectedThought = thought
+                        } label: {
+                            ThoughtRowView(thought: thought, showBanner: showBanner)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+            } header: {
+                Text(dayTitle(for: group.date))
+                    .font(DesignTokens.Typography.tag)
+                    .textCase(.lowercase)
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+            }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(Visibility.hidden, edges: .all)
+         
+
+        }
+      
+    }
      
      private var noResultsSection: some View {
          Section {
@@ -302,23 +309,6 @@ struct ChapterDetailedView: View {
         }
     }
     
-    
-     private var addThoughtButton: some View {
-         HStack {
-             Button {
-                 //showingNewThought = true
-             } label: {
-                 HStack {
-                     Image(systemName: "plus.circle.fill")
-                     Text("Novo Pensamento")
-                 }
-             }
-             .foregroundColor(.blue)
-             .fontWeight(.medium)
-             
-             Spacer()
-         }
-     }
      
      // MARK: - Helper Methods
 //     private func filteredThoughts(from thoughts: [Thought]) -> [Thought] {
@@ -336,12 +326,34 @@ struct ChapterDetailedView: View {
 //         return filtered.sorted { $0.modifiedDate > $1.modifiedDate }
 //     }
      
-     private var sectionTitle: String {
-         let formatter = DateFormatter()
-         formatter.dateFormat = "MMMM yyyy"
-         formatter.locale = Locale(identifier: "pt_BR")
-         return formatter.string(from: Date())
-     }
+    // MARK: - Agrupar por dia
+    private var groupedThoughts: [(date: Date, thoughts: [Thought])] {
+        let grouped = Dictionary(grouping: thoughts) { thought in
+            // Normalizar só pela data (sem hora)
+            Calendar.current.startOfDay(for: thought.createdDate)
+        }
+        
+        // Ordenar por data decrescente
+        return grouped
+            .map { (date: $0.key, thoughts: $0.value) }
+            .sorted { $0.date > $1.date }
+    }
+    
+    private func dayTitle(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        
+        if Calendar.current.isDateInToday(date) {
+            return "Hoje"
+        } else if Calendar.current.isDateInYesterday(date) {
+            return "Ontem"
+        } else {
+            formatter.dateFormat = "E, dd MMM"
+            return formatter.string(from: date)
+        }
+    }
+
+ 
      
      // MARK: - Actions
 //     private func deleteThought(_ thought: Thought) {

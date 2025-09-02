@@ -11,17 +11,14 @@ struct ContentView: View {
     
     @State private var selectedThought: Thought?
 
-    @State private var animateGradient: Bool = false
-    @State private var isBubbling: Bool = false
     
     @State private var position = ScrollPosition()
-    
-    // Namespace para transição
-    @Namespace private var transitionNamespace
+  
     
     // SwiftData...
     @Query(sort: \Thought.createdDate, order: .reverse) private var thoughts: [Thought]
     
+    @EnvironmentObject private var journeyService: JourneyService
     
     private var formattedToday: String {
         let formatter = DateFormatter()
@@ -57,9 +54,8 @@ struct ContentView: View {
             .navigationDestination(item: $selectedThought) { thought in
                 ThoughtDetailedView(thought: thought)
             }
-            .navigationDestination(isPresented: $addNewThought) {
-                ThoughtFormView(imageButton: imageButton, transitionNamespace: transitionNamespace)
-                   // .navigationTransition(.zoom(sourceID: "d", in: transitionNamespace))
+            .sheet(isPresented: $addNewThought) {
+                ThoughtFormView(journeys: journeyService.fetchJourneys())
             }
             .sheet(isPresented: $showJourneys) {
                 ChaptersGalleryView(showJourneyView: $showJourneys)
@@ -79,10 +75,10 @@ struct ContentView: View {
                 VStack(spacing: 6) {
                     Text("ecos.")
                         .font(DesignTokens.Typography.title)
-                        .foregroundStyle(DesignTokens.Colors.primary)
+                        .foregroundStyle(DesignTokens.Colors.primaryText)
                         .multilineTextAlignment(.center)
                     
-                    Text("11 agosto de 2025")
+                    Text(formattedToday)
                         .font(DesignTokens.Typography.caption)
                         .foregroundStyle(DesignTokens.Colors.secondaryText)
                 }

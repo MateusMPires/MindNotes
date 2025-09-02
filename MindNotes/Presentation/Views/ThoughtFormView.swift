@@ -10,169 +10,146 @@ import SwiftData
 
 // Preciso de: Jornadas disponíveis para o novo pensamento...
 
+struct ActionItem {
+    let icon: String
+    let action: () -> Void
+}
+
+enum ThoughtDestination: Hashable {
+    case details
+}
+
 
 struct ThoughtFormView: View {
    
     @Environment(\.dismiss) private var dismiss
     
-    @Query(sort: \Journey.createdDate, order: .forward) private var journeys: [Journey]
-
     @EnvironmentObject var thoughtService: ThoughtService
-    
-    // Receber journeys e namespace como parâmetros
-   // let journeys: [Journey]
-    let imageButton: String
-    let transitionNamespace: Namespace.ID
-    
+    let journeys: [Journey]
     
     // NewThoughtView States...
     @State var draft: ThoughtDraft = ThoughtDraft()
     @State private var notes: String = ""
-    @State private var newTag: String = ""
-    @State private var showingJourneyPicker = false
-    @State private var showAnimation = false
     
-  
+    @State private var destination: ThoughtDestination?
+
+    @State private var showTagView: Bool = false
+    
+    @FocusState private var keyboardIsFocused: Bool
+    
+    private var actions: [ActionItem] {
+        [
+            ActionItem(icon: "info") {
+                destination = .details
+            },
+            ActionItem(icon: "star") {
+                print("Favoritar")
+            },
+            ActionItem(icon: "wave.3.right") {
+                print("Ecoar")
+            }
+        ]
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 // Background
-                //AppBackground()
-                Color.accent.ignoresSafeArea()
+                AppBackground()
                
-                VStack(spacing: 60) {
-                    // Header com ícone que faz transição
-                    headerWithTransition
+                ScrollView {
                    
-                    // Formulário principal
-                    mainFormView
+                    VStack(alignment: .center) {
+                        
+                        // Pensamento principal...
+                        TextField("pensamento...", text: $draft.content, axis: .vertical)
+                            .focused($keyboardIsFocused)
+                            .lineLimit(2...4)
+                            .font(.custom("Manrope-SemiBold", size: 20))
+                            .padding()
+                            
+                        
+                        // Notas...
+                        TextField("notas...", text: $notes, axis: .vertical)
+                            .lineLimit(4...6)
+                            .font(.custom("Manrope-Regular", size: 16))
+                            .foregroundStyle(.secondary)
+                            .padding()
+                        
+                        // Actions...
+                        HStack(spacing: 24) {
+                            
+                            NavigationLink {
+                                ThoughtInfoFormView(draft: $draft) {
+                                    saveThought()
+                                }
+                            } label: {
+                                
+                                Image(systemName: "info")
+                                    .font(DesignTokens.Typography.body)
+                                    .tint(.primary)
+                                    .padding(8)
+                                    .clipShape(Circle())
+                                    .background {
+                                        Circle()
+                                            .stroke(.black, lineWidth: 1)
+                                    }
+                            }
+                            
+                            Button {
+                                showTagView.toggle()
+                            } label: {
+                                Image(systemName: "number")
+                                    .font(DesignTokens.Typography.body)
+                                    .tint(.primary)
+                                    .padding(5)
+                                    .clipShape(Circle())
+                                    .background {
+                                        Circle()
+                                            .stroke(.black, lineWidth: 1)
+                                    }
+                            }
+                        }
+                        .padding(.top, 32)
+                            
+                    }
+                    .padding(.top, 120)
+                    .multilineTextAlignment(.center)
+                    .onAppear {
+                        keyboardIsFocused = true
+                    }
                 }
-               
                 .padding()
             }
-            .navigationBarHidden(true)
-        }
-        .navigationTransition(.zoom(sourceID: imageButton, in: transitionNamespace))
-        .tint(.primary)
+            .sheet(isPresented: $showTagView, content: {
+                TagsView()
+            })
+            .toolbar(content: {
+                ToolbarItem(placement: .confirmationAction) {
+                    
+                    Button("Salvar") {
+                        // Haptic feedback antes de executar onSave
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
+                        
+                        let notificationFeedback = UINotificationFeedbackGenerator()
+                        notificationFeedback.notificationOccurred(.success)
 
-    }
-    
-    private var headerWithTransition: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Button("Cancelar") {
-                    withAnimation(.spring(duration: 0.1)) {
-                        showAnimation = false
-                    }
-                    
-                        dismiss()
-                    
-                }
-                .foregroundColor(.secondary)
-                
-                Spacer()
-                
-                Button("Criar") {
-                    // Haptic feedback antes de executar onSave
-                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                    impactFeedback.impactOccurred()
-                    
-                    let notificationFeedback = UINotificationFeedbackGenerator()
-                    notificationFeedback.notificationOccurred(.success)
-
-                    saveThought()
-                }
-                .fontWeight(.bold)
-                .disabled(draft.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-        }
-    }
-    
-    private var mainFormView: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-
-                // Campo de notas
-                VStack(alignment: .leading, spacing: 16) {
-                    
-                    TextField("Pensamento", text: $draft.content, axis: .vertical)
-                        .lineLimit(2...4)
-                        .font(.custom("Manrope-Regular", size: 16))
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.white.opacity(0.05))
-                                .stroke(.white.opacity(0.2), lineWidth: 1)
-                        }
-                    TextField("Notas", text: $notes, axis: .vertical)
-                        .lineLimit(4...6)
-                        .font(.custom("Manrope-Regular", size: 16))
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.white.opacity(0.05))
-                                .stroke(.white.opacity(0.2), lineWidth: 1)
-                        }
-                }
-                
-                
-                // Seção de Jornada
-                if !journeys.isEmpty {
-                    
-                    Divider()
-                    
-                    Picker("Jornada", selection: $draft.chapter) {
-                        ForEach(journeys, id: \.self) { journey in
-                            HStack {
-                                Image("\(journey.icon)")
-                                    .background { Color(hex: journey.colorHex)}
-                                    .padding(6)
-                                    .clipShape(Circle())
-                                
-                                Text("\(journey.title)")
-                                    .font(DesignTokens.Typography.body)
-                            }
-                            .tag(journey as Journey?)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.white.opacity(0.05))
-                            .stroke(.white.opacity(0.2), lineWidth: 1)
-                    }
-                    
-                }
-                
-                Divider()
-
-
-                // Botão para detalhes
-                NavigationLink {
-                    OtherView(draft: $draft) {
                         saveThought()
                     }
-                    
-                } label: {
-                    HStack {
-                        Text("Detalhes")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                    }
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.white.opacity(0.05))
-                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    .fontWeight(.bold)
+                    .disabled(draft.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancelar") {
+                        dismiss()
                     }
                 }
-                .foregroundColor(.primary)
-                
-                Spacer(minLength: 50)
-            }
+            })
+            
         }
+        .tint(.accent)
     }
     
     private func saveThought() {
@@ -183,15 +160,11 @@ struct ThoughtFormView: View {
             
         }
         
-        withAnimation(.spring(duration: 0.1)) {
-            showAnimation = false
-        }
-        
         dismiss()
     }
 }
 
-struct OtherView: View {
+struct ThoughtInfoFormView: View {
     
     @Environment(\.dismiss) var dismiss
     
@@ -278,34 +251,34 @@ struct OtherView: View {
                     // Reminder Section
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle(isOn: $draft.shouldRemind) {
-                            Label("Lembrete futuro", systemImage: "bell.fill")
-                                .foregroundStyle(.orange)
+                            Label("Eco", systemImage: "wave.3.right")
+                                .foregroundStyle(DesignTokens.Colors.primaryText)
                         }
                         .padding()
                         .background {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(.white.opacity(0.05))
                         }
-                        
-                        if draft.shouldRemind {
-                            DatePicker("Lembrar em", selection: $draft.reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                                .datePickerStyle(.compact)
-                                .padding()
-                                .background {
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(.white.opacity(0.05))
-                                }
-                            
-                            Text("Você receberá uma notificação para relembrar este pensamento.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+//                        
+//                        if draft.shouldRemind {
+//                            DatePicker("Lembrar em", selection: $draft.reminderDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+//                                .datePickerStyle(.compact)
+//                                .padding()
+//                                .background {
+//                                    RoundedRectangle(cornerRadius: 12)
+//                                        .fill(.white.opacity(0.05))
+//                                }
+//                            
+//                            Text("Você receberá uma notificação para relembrar este pensamento.")
+//                                .font(.caption)
+//                                .foregroundColor(.secondary)
+//                        }
                     }
                     
                     // Favorite Section
                     Toggle(isOn: $draft.isFavorite) {
-                        Label("Favorito", systemImage: "star.fill")
-                            .foregroundStyle(.yellow)
+                        Label("Favoritar", systemImage: "star.fill")
+                            .foregroundStyle(DesignTokens.Colors.primaryText)
                     }
                     .padding()
                     .background {
@@ -316,8 +289,7 @@ struct OtherView: View {
                 .padding()
             }
         }
-        .navigationTitle("Detalhes")
-        .navigationBarTitleDisplayMode(.inline)
+        .tint(.accentColor)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {
@@ -332,7 +304,7 @@ struct OtherView: View {
                     dismiss()
                     
                 } label: {
-                    Text("Criar")
+                    Text("Salvar")
                 }
                 .bold()
                 .disabled(draft.content.isEmpty)
@@ -354,6 +326,5 @@ struct OtherView: View {
 }
 
 #Preview {
-    @Previewable @Namespace var namespace
-    ThoughtFormView(imageButton: "mainButton", transitionNamespace: namespace)
+    ThoughtFormView(journeys: Journey.mockData)
 }

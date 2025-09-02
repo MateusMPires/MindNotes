@@ -77,6 +77,7 @@
 				Core/Models/Thought.swift,
 				"Utilities/Fonts/Manrope-Medium.ttf",
 				"Utilities/Fonts/Manrope-Regular.ttf",
+				"Utilities/Fonts/Manrope-SemiBold.ttf",
 				"Utilities/Fonts/Outfit-Medium.ttf",
 				"Utilities/Fonts/Outfit-Regular.ttf",
 			);
