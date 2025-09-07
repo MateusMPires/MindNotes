@@ -34,7 +34,7 @@ struct ThoughtFormView: View {
     @State private var destination: ThoughtDestination?
 
     @State private var showTagView: Bool = false
-    
+
     @FocusState private var keyboardIsFocused: Bool
     
     private var actions: [ActionItem] {
@@ -61,20 +61,26 @@ struct ThoughtFormView: View {
                    
                     VStack(alignment: .center) {
                         
-                        // Pensamento principal...
-                        TextField("pensamento...", text: $draft.content, axis: .vertical)
-                            .focused($keyboardIsFocused)
-                            .lineLimit(2...4)
-                            .font(.custom("Manrope-SemiBold", size: 20))
-                            .padding()
+                        HStack {
+                            VStack {
+                                // Pensamento principal...
+                                TextField("pensamento...", text: $draft.content, axis: .vertical)
+                                    .focused($keyboardIsFocused)
+                                    .lineLimit(2...4)
+                                    .font(.custom("Manrope-SemiBold", size: 20))
+                                    .padding()
+                                
+                                
+                                // Notas...
+                                TextField("notas...", text: $notes, axis: .vertical)
+                                    .lineLimit(4...6)
+                                    .font(.custom("Manrope-Regular", size: 16))
+                                    .foregroundStyle(.secondary)
+                                    .padding()
+                            }
                             
-                        
-                        // Notas...
-                        TextField("notas...", text: $notes, axis: .vertical)
-                            .lineLimit(4...6)
-                            .font(.custom("Manrope-Regular", size: 16))
-                            .foregroundStyle(.secondary)
-                            .padding()
+                            Spacer()
+                        }
                         
                         // Actions...
                         HStack(spacing: 24) {
@@ -114,7 +120,7 @@ struct ThoughtFormView: View {
                             
                     }
                     .padding(.top, 120)
-                    .multilineTextAlignment(.center)
+                    .multilineTextAlignment(.leading)
                     .onAppear {
                         keyboardIsFocused = true
                     }
@@ -122,7 +128,7 @@ struct ThoughtFormView: View {
                 .padding()
             }
             .sheet(isPresented: $showTagView, content: {
-                TagsView()
+                TagsView(selectedTags: $draft.tags)
             })
             .toolbar(content: {
                 ToolbarItem(placement: .confirmationAction) {

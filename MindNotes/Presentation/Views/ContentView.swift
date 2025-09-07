@@ -11,12 +11,8 @@ struct ContentView: View {
     
     @State private var selectedThought: Thought?
 
-    
+    @State private var beatAnimation: Bool = false
     @State private var position = ScrollPosition()
-  
-    
-    // SwiftData...
-    @Query(sort: \Thought.createdDate, order: .reverse) private var thoughts: [Thought]
     
     @EnvironmentObject private var journeyService: JourneyService
     
@@ -36,32 +32,35 @@ struct ContentView: View {
                 // App Background...
                 AppBackground()
                 
-                ScrollView {
-                   LazyVStack(alignment: .center, spacing: 160) {
+                //ScrollView {
+                VStack(alignment: .center, spacing: 0) {
+                    VStack(spacing: 160) {
                         headerView
-                       
+                        
                         addThoughtButton
-                       
-                       if !thoughts.isEmpty {
-                           recentsSection
-                       }
+
                     }
-                   .scrollTargetLayout()
+                    
+                    recentsSection
+
                 }
-             
+                
             }
-            .defaultScrollAnchor(.top)
-            .navigationDestination(item: $selectedThought) { thought in
-                ThoughtDetailedView(thought: thought)
-            }
+            //.defaultScrollAnchor(.top)
+//            .navigationDestination(item: $selectedThought) { thought in
+//                ThoughtDetailedView(thought: thought)
+//            }
             .sheet(isPresented: $addNewThought) {
                 ThoughtFormView(journeys: journeyService.fetchJourneys())
             }
             .sheet(isPresented: $showJourneys) {
-                ChaptersGalleryView(showJourneyView: $showJourneys)
+                ThoughtsContentView()
             }
             .onOpenURL { url in
                 addNewThought = true
+            }
+            .onAppear {
+                beatAnimation = true
             }
         }
     }
@@ -103,47 +102,72 @@ struct ContentView: View {
     }
     
     private var recentsSection: some View {
-            VStack(alignment: .center, spacing: 24) {
-                Text("recentes")
-                    .font(DesignTokens.Typography.tag)
-                    .foregroundStyle(.tertiary)
+            VStack(alignment: .center, spacing: 0) {
                 
-                ForEach(thoughts.prefix(3), id: \.id) { thought in
-                    Button {
-                        selectedThought = thought
-                    } label: {
-                        ThoughtRowView(thought: thought, showBanner: true)
-                            .id(thought.id)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
-                            .animation(.spring(duration: 0.4), value: thought.id)
-                    }
-                }
+                Spacer()
                 
-                // Chapters Button...
                 Button {
                     showJourneys.toggle()
+
                 } label: {
-                    Image(systemName: "bookmark.fill")
-                        .foregroundStyle(.accent)
-                        .font(.system(size: 20))
-                        //.padding(10)
-//                        .background {
-//                            Circle()
-//                                .stroke(.accent, style: StrokeStyle(lineWidth: 2))
-//                        }
+                    VStack(spacing: 8) {
                         
+                        //Image(systemName: "chevron.up")
+                        Text("mostrar tudo")
+                            .font(DesignTokens.Typography.caption)
+                            .foregroundStyle(DesignTokens.Colors.secondaryText)
+                    }
+//                        .foregroundStyle(.tertiary)
                 }
-                .padding(.vertical, 16)
+                .tint(Color.secondary)
+//
+//                ForEach(thoughts.prefix(3), id: \.id) { thought in
+//                    Button {
+//                        selectedThought = thought
+//                    } label: {
+//                        ThoughtRowView(thought: thought, showBanner: true)
+//                            .id(thought.id)
+//                            .transition(.asymmetric(
+//                                insertion: .move(edge: .trailing).combined(with: .opacity),
+//                                removal: .move(edge: .leading).combined(with: .opacity)
+//                            ))
+//                            .animation(.spring(duration: 0.4), value: thought.id)
+//                    }
+//                }
+//                
+                // Chapters Button...
+//                Button {
+//                    showJourneys.toggle()
+//                } label: {
+//                    Image(systemName: "bookmark.fill")
+//                        .foregroundStyle(.accent)
+//                        .font(.system(size: 20))
+//                        //.padding(10)
+////                        .background {
+////                            Circle()
+////                                .stroke(.accent, style: StrokeStyle(lineWidth: 2))
+////                        }
+//                        
+//                }
+//                .padding(.vertical, 16)
             }
-            .padding()
+            .padding(.bottom, 40)
         
     }
 }
 
 #Preview {
+    
+    let sharedModelContainer: ModelContainer = {
+        let schema = Schema(versionedSchema: SchemaV1.self)
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
     ContentView()
-        .modelContainer(for: [Journey.self, Thought.self], inMemory: true)
+        .modelContainer(sharedModelContainer)
 }

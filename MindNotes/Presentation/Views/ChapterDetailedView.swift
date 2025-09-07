@@ -33,8 +33,7 @@ struct ChapterDetailedView: View {
     var onArchive: (() -> Void)?
     
     var onDelete: (() -> Void)?
-    
-    
+        
     // Searching...
      @State private var searchText = ""
      @State private var selectedThought: Thought?
@@ -96,9 +95,9 @@ struct ChapterDetailedView: View {
              .toolbar {
                  toolbarContent
              }
-             .sheet(isPresented: $showingTagFilter) {
-                 TagsView()
-             }
+//             .sheet(isPresented: $showingTagFilter) {
+//                 TagsView(selectedTags: $selectedTags)
+//             }
              .confirmationDialog(
                   isArchived ? "Desarquivar Capítulo" : "Arquivar Capítulo",
                   isPresented: $showingArchiveConfirmation,

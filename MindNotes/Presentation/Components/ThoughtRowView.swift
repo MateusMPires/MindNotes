@@ -37,7 +37,7 @@ struct ThoughtRowView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(thought.content)
                         //Text("Uma frase bem legal. E mais uma frase bem legal.")
-                            .font(DesignTokens.Typography.body)
+                            .font(.custom("Manrope-Regular", size: 16))
                             .foregroundStyle(DesignTokens.Colors.primaryText)
                             .multilineTextAlignment(.leading)
                         
@@ -98,6 +98,5 @@ struct ThoughtRowView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Thought.self, inMemory: true)
+    ThoughtRowView(thought: Thought(content: "Uma frase bem legal", tags: [ThoughtTag(id: .init(), title: "conclusão")]), showBanner: false)
 }

@@ -17,23 +17,15 @@ struct ThoughtDetailedView: View {
             AppBackground()
             
             ScrollView {
-                VStack(spacing: 32) {
-                    // Main thought card
+                VStack(alignment: .center, spacing: 32) {
                     thoughtCard
-                    
-                    Spacer()
-                    
-                    if !thought.tags.isEmpty {
-                        tagsSection
-                    }
-                    
+  
                     Spacer()
                     
                     actionButtons
                 }
-                .padding(24)
             }
-            .navigationBarTitleDisplayMode(.inline)
+            .frame(maxWidth: .infinity)
             .sheet(isPresented: $showingEditSheet) {
                 ThoughtEditFormView(journeys: [], thoughtToEdit: thought, draft: ThoughtDraft(content: thought.content, notes: thought.notes ?? "", createdDate: thought.createdDate, modifiedDate: thought.createdDate, isFavorite: thought.isFavorite, chapter: thought.chapter))
             }
@@ -52,124 +44,51 @@ struct ThoughtDetailedView: View {
     
     // MARK: - Main Thought Card
     private var thoughtCard: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Header with status indicators
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let journey = thought.chapter {
-                        Text(journey.title)
-                            .font(.custom("Manrope-Regular", size: 12))
-                            .foregroundColor(.secondary)
-                    } else {
-                        Text("em minha mente")
-                            .font(.custom("Manrope-Regular", size: 12))
-                            .italic()
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text(formatDate(thought.createdDate))
-                        .font(.custom("Manrope-Regular", size: 10))
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 12) {
-                    if thought.isFavorite {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
-                            .font(.title3)
-                    }
-                    
-                    if thought.shouldRemind {
-                        Image(systemName: "bell.fill")
-                            .foregroundColor(.orange)
-                            .font(.title3)
-                    }
-                }
-            }
-            
+        VStack(alignment: .leading, spacing: 2) {
+
             // Main content
-            VStack(alignment: .leading, spacing: 16) {
-                Text(thought.content)
-                    .font(.custom("Manrope-Regular", size: 18))
-                    .lineSpacing(4)
-                    .multilineTextAlignment(.leading)
-            }
-            
-            Spacer()
-            
-            if let notes = thought.notes, !notes.isEmpty {
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "note.text")
-                            .font(.title3)
-                            .foregroundColor(.orange)
-                        
-                        Text("Notas adicionais")
-                            .font(.custom("Manrope-Regular", size: 14))
-                            .fontWeight(.medium)
-                    }
+            VStack(spacing: 40) {
+                
+                HStack {
+                    Text(thought.content)
+                        .font(.custom("Manrope-Medium", size: 20))
+                        .lineSpacing(4)
                     
+                    Spacer()
+                }
+                
+                if let notes = thought.notes, !notes.isEmpty {
                     Text(notes)
-                        .font(.custom("Manrope-Regular", size: 16))
+                        .font(.custom("Manrope-Regular", size: 14))
                         .lineSpacing(3)
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(.leading)
                 }
+                
             }
+            .multilineTextAlignment(.leading)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                if let journey = thought.chapter {
+                    Text(journey.title)
+                        .font(.custom("Manrope-Regular", size: 12))
+                        .foregroundColor(DesignTokens.Colors.secondaryText)
+                } else {
+                    Text("nenhum ciclo")
+                        .font(.custom("Manrope-Regular", size: 12))
+                        .foregroundColor(DesignTokens.Colors.secondaryText)
+                }
+                
+                Text(formatDate(thought.createdDate))
+                    .font(.custom("Manrope-Regular", size: 10))
+                    .foregroundColor(DesignTokens.Colors.secondaryText)
+            }
+            .padding(.top, 80)
+            
         }
-        .padding(24)
-        .background {
-            TransparentBlurView(removeAllFilters: true)
-                .blur(radius: 9, opaque: true)
-                .background(.white.opacity(0.05))
-        }
-        .clipShape(.rect(cornerRadius: 16, style: .continuous))
-        .background {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(.white.opacity(0.3), lineWidth: 1)
-        }
+        .padding(.top, 120)
+        .padding(.horizontal, 32)
     }
     
-    // MARK: - Tags Section
-    private var tagsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-//            HStack(spacing: 8) {
-//                Image(systemName: "tag.fill")
-//                    .font(.title3)
-//                    .foregroundColor(.blue)
-//                
-//                Text("Etiquetas")
-//                    .font(.custom("Manrope-Regular", size: 14))
-//                    .fontWeight(.medium)
-//            }
-//            
-////            FlowLayout(spacing: 8) {
-////                ForEach(thought.tagsId, id: \.self) { tag in
-////                    Text("#\(tag)")
-////                        .font(.custom("Manrope-Regular", size: 12))
-////                        .textCase(.lowercase)
-////                        .padding(.horizontal, 12)
-////                        .padding(.vertical, 6)
-////                        .background(.blue.opacity(0.2))
-////                        .foregroundColor(.blue)
-////                        .clipShape(.capsule)
-////                }
-////            }
-//        }
-//        .padding(20)
-//        .background {
-//            TransparentBlurView(removeAllFilters: true)
-//                .blur(radius: 9, opaque: true)
-//                .background(.blue.opacity(0.05))
-//        }
-//        .clipShape(.rect(cornerRadius: 12, style: .continuous))
-//        .background {
-//            RoundedRectangle(cornerRadius: 12, style: .continuous)
-//                .stroke(.blue.opacity(0.3), lineWidth: 1)
-        }
-    }
     
     // MARK: - Action Buttons
     private var actionButtons: some View {
@@ -260,66 +179,10 @@ struct ThoughtDetailedView: View {
     }
 }
 
-// MARK: - Flow Layout for Tags
-struct FlowLayout: Layout {
-    let spacing: CGFloat
-    
-    init(spacing: CGFloat = 8) {
-        self.spacing = spacing
-    }
-    
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = FlowResult(
-            in: proposal.replacingUnspecifiedDimensions().width,
-            subviews: subviews,
-            spacing: spacing
-        )
-        return result.size
-    }
-    
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = FlowResult(
-            in: bounds.width,
-            subviews: subviews,
-            spacing: spacing
-        )
-        for (index, subview) in subviews.enumerated() {
-            subview.place(at: CGPoint(x: bounds.minX + result.positions[index].x, y: bounds.minY + result.positions[index].y), proposal: .unspecified)
-        }
-    }
-    
-    struct FlowResult {
-        var size = CGSize.zero
-        var positions: [CGPoint] = []
-        
-        init(in maxWidth: CGFloat, subviews: LayoutSubviews, spacing: CGFloat) {
-            var currentPosition = CGPoint.zero
-            var lineHeight: CGFloat = 0
-            
-            for subview in subviews {
-                let subviewSize = subview.sizeThatFits(.unspecified)
-                
-                if currentPosition.x + subviewSize.width > maxWidth && currentPosition.x > 0 {
-                    currentPosition.x = 0
-                    currentPosition.y += lineHeight + spacing
-                    lineHeight = 0
-                }
-                
-                positions.append(currentPosition)
-                currentPosition.x += subviewSize.width + spacing
-                lineHeight = max(lineHeight, subviewSize.height)
-                size.width = max(size.width, currentPosition.x - spacing)
-                size.height = currentPosition.y + lineHeight
-            }
-        }
-    }
-}
-
 
 #Preview {
     let sampleThought = Thought(
-        content: "Este é um pensamento de exemplo que demonstra como a view ficará com conteúdo mais longo e detalhado",
-        notes: "Algumas notas adicionais que complementam o pensamento principal e fornecem mais contexto",
+        content: "Este é um pensamento dkjsfhasdkjfhas ajkdfhajfdahsl",
         tags: [ThoughtTag(id: .init(),title: "conclusão")],
         shouldRemind: true,
         reminderDate: Date()

@@ -61,7 +61,7 @@ struct PulseButtonView: View {
                 Image(systemName: "circle.fill")
                     .font(.system(size: 30))
                     .foregroundStyle(.accent.gradient)
-                    .symbolEffect(.bounce, options: !beatAnimation ? .default : .repeating.speed(0.5), value: beatAnimation)
+                    //.symbolEffect(.bounce, options: !beatAnimation ? .default : .repeating.speed(0.5), value: beatAnimation)
             }
             .frame(maxWidth: 70, maxHeight: 70)
             .onAppear {
@@ -141,9 +141,9 @@ struct PulseButtonView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             pulsedHearts.removeAll(where: { $0.id == pulsedHeart.id })
             
-            if pulsedHearts.isEmpty {
-                showPusles = false
-            }
+//            if pulsedHearts.isEmpty {
+//                showPusles = false
+//            }
         }
     }
 }
