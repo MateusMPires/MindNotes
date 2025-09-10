@@ -130,7 +130,7 @@ struct ThoughtEditFormView: View {
         
         thoughtToEdit.content = trimmedContent
         thoughtToEdit.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
-        thoughtToEdit.tags = draft.tags
+        thoughtToEdit.tags = Array(draft.tags)
         thoughtToEdit.shouldRemind = draft.shouldRemind
         thoughtToEdit.reminderDate = draft.shouldRemind ? draft.reminderDate : nil
         thoughtToEdit.createdDate = draft.createdDate
@@ -161,32 +161,32 @@ struct OtherEditView: View {
             Form {
                 // Tags Section
                 Section("Etiquetas") {
-                    if !draft.tags.isEmpty {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(draft.tags, id: \.self) { tag in
-                                    HStack(spacing: 4) {
-                                        Text("#\(tag)")
-                                            .font(.caption)
-                                        
-                                        Button {
-                                            //removeTag(tag)
-                                        } label: {
-                                            Image(systemName: "xmark")
-                                                .font(.caption2)
-                                        }
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 6)
-                                    .background(Color.blue.opacity(0.2))
-                                    .foregroundColor(.blue)
-                                    .clipShape(Capsule())
-                                }
-                            }
-                            .padding(.horizontal, 1)
-                        }
-                    }
-                    
+//                    if !draft.tags.isEmpty {
+//                        ScrollView(.horizontal, showsIndicators: false) {
+//                            HStack(spacing: 8) {
+//                                ForEach(draft.tags, id: \.self) { tag in
+//                                    HStack(spacing: 4) {
+//                                        Text("#\(tag)")
+//                                            .font(.caption)
+//                                        
+//                                        Button {
+//                                            //removeTag(tag)
+//                                        } label: {
+//                                            Image(systemName: "xmark")
+//                                                .font(.caption2)
+//                                        }
+//                                    }
+//                                    .padding(.horizontal, 10)
+//                                    .padding(.vertical, 6)
+//                                    .background(Color.blue.opacity(0.2))
+//                                    .foregroundColor(.blue)
+//                                    .clipShape(Capsule())
+//                                }
+//                            }
+//                            .padding(.horizontal, 1)
+//                        }
+//                    }
+//                    
                     HStack {
                         TextField("Nova etiqueta", text: $newTag)
                             .textInputAutocapitalization(.never)

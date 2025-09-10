@@ -45,7 +45,7 @@ struct ThoughtRowView: View {
                         HStack(spacing: 6) {
                             //if !thought.tags.isEmpty {
                             //ForEach(thought.tags, id: \.self) { tag in
-                            Text("#conclusão")
+                            Text(thought.tags.first?.title ?? "Sem tags")
                                 .font(DesignTokens.Typography.tag)
                                 .textCase(.lowercase)
                                 //.padding(.leading, 8)

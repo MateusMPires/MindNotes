@@ -98,6 +98,10 @@ struct ContentView: View {
         } label: {
             PulseButtonView()
                 .frame(width: 60, height: 60)
+//                .overlay {
+//                    Image(systemName: "keyboard.fill")
+//                        .tint(.white)
+//                }
         }
     }
     
@@ -113,7 +117,7 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         
                         //Image(systemName: "chevron.up")
-                        Text("mostrar tudo")
+                        Text("acervo")
                             .font(DesignTokens.Typography.caption)
                             .foregroundStyle(DesignTokens.Colors.secondaryText)
                     }

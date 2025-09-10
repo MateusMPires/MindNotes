@@ -58,10 +58,14 @@ struct ThoughtDetailedView: View {
                 }
                 
                 if let notes = thought.notes, !notes.isEmpty {
-                    Text(notes)
-                        .font(.custom("Manrope-Regular", size: 14))
-                        .lineSpacing(3)
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text(notes)
+                            .font(.custom("Manrope-Regular", size: 14))
+                            .lineSpacing(3)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                    }
                 }
                 
             }

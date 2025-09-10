@@ -76,10 +76,11 @@ class ThoughtService: ObservableObject {
             return
         }
         
+        // atualizar isso...
         let newThought = Thought(
             content: trimmedContent,
             notes: trimmedNotes.isEmpty ? nil : trimmedNotes,
-            tags: draft.tags,
+            tags: Array(draft.tags),
             shouldRemind: draft.shouldRemind,
             reminderDate: draft.shouldRemind ? draft.reminderDate : nil,
             chapter: draft.chapter

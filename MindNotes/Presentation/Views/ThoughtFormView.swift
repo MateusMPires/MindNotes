@@ -117,6 +117,9 @@ struct ThoughtFormView: View {
                             }
                         }
                         .padding(.top, 32)
+                        .onTapGesture {
+                            keyboardIsFocused = false
+                        }
                             
                     }
                     .padding(.top, 120)
@@ -126,6 +129,10 @@ struct ThoughtFormView: View {
                     }
                 }
                 .padding()
+                .onTapGesture {
+                    keyboardIsFocused = false
+                }
+                .scrollDismissesKeyboard(.automatic)
             }
             .sheet(isPresented: $showTagView, content: {
                 TagsView(selectedTags: $draft.tags)
@@ -257,7 +264,7 @@ struct ThoughtInfoFormView: View {
                     // Reminder Section
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle(isOn: $draft.shouldRemind) {
-                            Label("Eco", systemImage: "wave.3.right")
+                            Label("Eco", systemImage: "bell.badge.waveform.fillc")
                                 .foregroundStyle(DesignTokens.Colors.primaryText)
                         }
                         .padding()

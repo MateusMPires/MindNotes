@@ -47,46 +47,45 @@ struct ThoughtsContentView: View {
                       
                       VStack(spacing: 80) {
                           
-                          VStack(spacing: 64) {
-                              
-                              ContentElasticCustomSegmentedControl()
-                              
-                              VStack(spacing: 8) {
-                                  Image(systemName: "list.bullet")
-                                      .font(.system(size: 16))
-                                      .foregroundStyle(.white)
-                                      .padding(10)
-                                      .background(Color.accentColor)
-                                      .clipShape(Circle())
-                                  
-                                  Text("recentes.")
-                                      .font(DesignTokens.Typography.title)
-                                      .textCase(.lowercase)
-                                      .foregroundStyle(DesignTokens.Colors.primaryText)
-                                  
-                                  // Filtros
-                                  HStack(spacing: 32) {
-                                      filterButton(title: "todos", filter: .todos)
-                                      filterButton(title: "favoritos", filter: .favoritos)
-                                      filterButton(title: "ecos", filter: .ecos)
+                          ScrollView {
+                              VStack(spacing: 64) {
+                                  VStack(alignment: .center, spacing: 8) {
+                                      Image(systemName: "list.bullet")
+                                          .font(.system(size: 16))
+                                          .foregroundStyle(.white)
+                                          .padding(10)
+                                          .background(Color.accentColor)
+                                          .clipShape(Circle())
+                                      
+                                      Text("acervo.")
+                                          .font(DesignTokens.Typography.title)
+                                          .textCase(.lowercase)
+                                          .foregroundStyle(DesignTokens.Colors.primaryText)
+                                      
+                                      // Filtros
+                                      HStack(spacing: 32) {
+                                          filterButton(title: "todos", filter: .todos)
+                                          filterButton(title: "favoritos", filter: .favoritos)
+                                          filterButton(title: "ecos", filter: .ecos)
+                                      }
+                                      .font(.custom("Outfit-Light", size: 12))
+                                      .padding(.top, 12)
                                   }
-                                  .font(.custom("Outfit-Light", size: 12))
-                                  .padding(.top, 12)
-                              }
-                          }
-                          
-                          VStack(spacing: 18) {
-                              List {
+                                  .listRowBackground(Color.clear)
+                                  .listRowSeparator(Visibility.hidden, edges: .all)
+                                  
+                                  
                                   if !filteredThoughts.isEmpty {
                                       thoughtsSection
                                   } else {
                                       noResultsSection
                                   }
                               }
-                              .listStyle(.grouped)
-                              .listRowInsets(EdgeInsets())
-                              .scrollContentBackground(.hidden)
                           }
+                          .listStyle(.grouped)
+                          .listRowInsets(EdgeInsets())
+                          .scrollContentBackground(.hidden)
+                          
                       }
                   }
                   .navigationDestination(item: $selectedThought) { thought in
@@ -95,6 +94,16 @@ struct ThoughtsContentView: View {
                   .padding(.top, 32)
                   .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
                   .toolbarBackgroundVisibility(.hidden, for: .bottomBar)
+                  .toolbar {
+                      ToolbarItem(placement: .confirmationAction) {
+                          Button {
+                              dismiss()
+                          } label: {
+                              Image(systemName: "xmark.circle")
+                                  .symbolRenderingMode(.hierarchical)
+                          }
+                      }
+                  }
               }
           }
           .onAppear {
@@ -145,7 +154,7 @@ struct ThoughtsContentView: View {
         
 
        }
-     
+       .padding(.horizontal, 8)
    }
     
     private var noResultsSection: some View {

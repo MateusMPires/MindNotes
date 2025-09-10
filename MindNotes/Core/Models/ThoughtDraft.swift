@@ -13,7 +13,7 @@ struct ThoughtDraft {
     var createdDate: Date = Date()
     var modifiedDate: Date = Date()
     var isFavorite: Bool = false
-    var tags: [ThoughtTag] = []
+    var tags: Set<ThoughtTag> = []
     var shouldRemind: Bool = false
     var reminderDate: Date = Date()
     var isCompleted: Bool = false

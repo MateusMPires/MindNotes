@@ -72,7 +72,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Core/Models/Journey.swift,
+				Core/Models/MigrationPlan.swift,
 				Core/Models/Schema.swift,
+				Core/Models/SchemaV2.swift,
 				Core/Models/Tag.swift,
 				Core/Models/Thought.swift,
 				"Utilities/Fonts/Manrope-Medium.ttf",

@@ -13,14 +13,27 @@ import AppIntents
 struct MindNotesApp: App {
     
     // SwiftData Container...
-    var sharedModelContainer: ModelContainer = {
+//    var sharedModelContainer: ModelContainer = {
+//        let schema = Schema(versionedSchema: SchemaV1.self)
+//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+//        
+//        do {
+//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+//        } catch {
+//            fatalError("Could not create ModelContainer: \(error)")
+//        }
+//    }()
+    
+    let sharedModelContainer: ModelContainer = {
         let schema = Schema(versionedSchema: SchemaV1.self)
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        
+
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(
+                for: schema, // versão atual
+                migrationPlan: MigrationPlan.self // plano de migração
+            )
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            fatalError("Falha ao inicializar ModelContainer: \(error)")
         }
     }()
     
